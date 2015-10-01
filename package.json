@@ -1,6 +1,6 @@
 {
   "name": "thing-it-device-microcontroller",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "[thing-it-node] Device Plugin for Arduino.",
   "authors": "Marc Gille",
   "license": "MIT, EPL",

@@ -1,0 +1,17 @@
+{
+  "name": "thing-it-device-arduino",
+  "version": "0.0.1",
+  "description": "[thing-it-node] Device Plugin for Arduino.",
+  "authors": "Marc Gille",
+  "license": "MIT, EPL",
+  "keywords": [
+    "IoT",
+    "thing-it",
+    "Arduino",
+    "Uno"
+  ],
+  "dependencies": {
+    "johnny-five": "^0.8.85",
+    "serialport": "^1.7.4"
+  }
+}

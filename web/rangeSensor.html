@@ -1,0 +1,11 @@
+<table>
+    <tr valign="bottom">
+        <td>{{component.configuration.min}}</td>
+        <td><input
+                ti-knob="{width: 100, fgColor: '#2f6ab4', bgColor: '#E6E6E6', angleOffset: -135, angleArc: 270, font: '\'Titillium Web\', sans-serif'}"
+                ti-model="component._value" ti-min="component.configuration.min"
+                ti-max="component.configuration.max" ti-change="panel.pushSensorValue(component)"
+                data-height="100"></td>
+        <td>{{component.configuration.max}}</td>
+    </tr>
+</table>

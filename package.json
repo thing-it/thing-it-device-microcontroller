@@ -1,5 +1,5 @@
 {
-  "name": "thing-it-device-arduino",
+  "name": "thing-it-device-microcontroller",
   "version": "0.0.1",
   "description": "[thing-it-node] Device Plugin for Arduino.",
   "authors": "Marc Gille",

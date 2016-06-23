@@ -138,11 +138,10 @@ function Lcd() {
         }
 
         this.state = {
+            text: null,
             column: 0,
             row: 0
         }
-
-        this.initializeText();
 
         if (!this.isSimulated()) {
             try {
@@ -184,23 +183,6 @@ function Lcd() {
     /**
      *
      */
-    Lcd.prototype.initializeText = function () {
-        this.state.text = [];
-
-        for (var n = 0; n < this.configuration.rows; ++n) {
-            var row = [];
-
-            this.state.text.push(row);
-
-            for (var m = 0; m < this.configuration.columns; ++m) {
-                row.push(" ");
-            }
-        }
-    };
-
-    /**
-     *
-     */
     Lcd.prototype.getState = function () {
         return this.state;
     };
@@ -221,7 +203,7 @@ function Lcd() {
      *
      */
     Lcd.prototype.clear = function () {
-        this.initializeText();
+        this.state.text = null;
         this.state.row = 0;
         this.state.column = 0;
 
@@ -243,25 +225,6 @@ function Lcd() {
         // In case a number was submitted
 
         parameters.text = new String(parameters.text);
-
-        for (var n = 0; n < parameters.text.length; ++n) {
-            if (this.state.column == this.state.text[this.state.row].length) {
-                ++this.state.row;
-
-                this.state.column = 0;
-
-                if (this.state.row == this.state.text.length) {
-                    this.state.row = 0;
-
-                    break;
-                }
-            }
-
-            this.state.text[this.state.row][this.state.column] = parameters.text
-                .charAt(n);
-
-            ++this.state.column;
-        }
 
         if (this.lcd) {
             this.lcd.print();

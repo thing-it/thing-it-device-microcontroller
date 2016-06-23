@@ -3,7 +3,7 @@ module.exports = {
     label: "Home",
     id: "home",
     devices: [{
-        label: "Arduino Uno 1",
+        label: "Microcontroller Uno 1",
         id: "arduino1",
         plugin: "microcontroller/arduino",
         configuration: {},

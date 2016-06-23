@@ -1,4 +1,4 @@
-describe('[thing-it] Arduino Microcontroller Plugin', function () {
+describe('[thing-it] Microcontroller Microcontroller Plugin', function () {
     var testDriver;
 
     before(function () {

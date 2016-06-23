@@ -59,6 +59,8 @@ function Led() {
 
                 this.led = new five.Led(this.configuration.pin);
 
+                this.logDebug("LED initialized.");
+
                 deferred.resolve();
             } catch (error) {
                 this.device.node
@@ -87,7 +89,7 @@ function Led() {
      *
      */
     Led.prototype.setState = function (state) {
-        this.state = state;
+        this.state.light = state.light;
 
         if (this.led) {
             if (this.state.light == "blink") {

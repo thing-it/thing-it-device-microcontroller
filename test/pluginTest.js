@@ -1,11 +1,9 @@
-var assert = require("assert");
-
 describe('[thing-it] Arduino Microcontroller Plugin', function () {
     var testDriver;
 
     before(function () {
         testDriver = require("thing-it-test").createTestDriver({
-            logLevel: "error"
+            logLevel: "debug"
         });
 
         testDriver.registerDevicePlugin(__dirname + "/../arduino");
@@ -22,11 +20,20 @@ describe('[thing-it] Arduino Microcontroller Plugin', function () {
     describe('Start Configuration', function () {
         this.timeout(5000);
 
+        before(function () {
+            testDriver.removeAllListeners();
+        });
         it('should complete without error', function () {
-            return testDriver.start({
+            testDriver.addListener({
+                publishDeviceStateChange: function (device, state) {
+                    done();
+                }
+            });
+
+            testDriver.start({
                 configuration: require("../examples/configuration.js"),
                 heartbeat: 10,
-                simulated: true
+                simulated: false
             });
         });
     });
@@ -37,20 +44,17 @@ describe('[thing-it] Arduino Microcontroller Plugin', function () {
             testDriver.removeAllListeners();
         });
         it('should produce Actor State Change message', function (done) {
-            //testDriver.addListener({
-            //    publishActorStateChange: function (device, actor, state) {
-            //        if (actor.id === "lightBulbBedroom" && device.id === "philipsHueBridge" && state.brightnessPercent === 0)
-            //        {
-            //            done();
-            //        }
-            //        else
-            //        {
-            //            done('Unexpected Actor State Change message');
-            //        }
-            //    }
-            //});
+            testDriver.addListener({
+                publishActorStateChange: function (device, actor, state) {
+                    if (actor.id === "led1" && device.id === "arduino1") {
+                        done();
+                    }
+                    else {
+                        done('Unexpected Actor State Change message');
+                    }
+                }
+            });
 
-            done();
             testDriver.arduino1.led1.on();
         });
     });

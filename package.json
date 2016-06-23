@@ -1,7 +1,7 @@
 {
   "name": "thing-it-device-microcontroller",
-  "version": "0.0.4",
-  "description": "[thing-it-node] Device Plugin for Arduino.",
+  "version": "0.0.5",
+  "description": "[thing-it-node] Device Plugin for microcontroller functionality provided e.g. via an Arduino but also the GPIOs of a Raspberry Pi or C.H.I.P..",
   "authors": "Marc Gille",
   "license": "MIT, EPL",
   "keywords": [
@@ -13,8 +13,7 @@
   "dependencies": {
     "johnny-five": "^0.8.85",
     "lodash": "^3.10.1",
-    "q": "^1.4.1",
-    "serialport": "^1.7.4"
+    "q": "^1.4.1"
   },
   "devDependencies": {
     "thing-it-test": "0.0.13"

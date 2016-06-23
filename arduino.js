@@ -100,10 +100,22 @@ function Arduino() {
         } else {
             var five = require("johnny-five");
 
+            this.logDebug("Bind Arduino.");
+
             this.board = new five.Board();
 
             this.board.on("ready", function () {
+                this.logDebug("Arduino ready.");
+
+                this.publishStateChange();
+
                 deferred.resolve();
+            }.bind(this));
+
+            this.board.on("fail", function (error) {
+                this.logError(error);
+
+                deferred.reject(error);
             }.bind(this));
         }
 

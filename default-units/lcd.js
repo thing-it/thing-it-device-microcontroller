@@ -224,9 +224,11 @@ function Lcd() {
 
         // In case a number was submitted
 
-        parameters.text = new String(parameters.text);
+        this.state.text = new String(parameters.text);
 
         if (this.lcd) {
+            // TODO
+
             this.lcd.print();
         }
 

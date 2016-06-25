@@ -35,6 +35,14 @@ module.exports = {
                     id: "integer"
                 }
             }]
+        }, {
+            id: "increaseBacklit",
+            label: "Increase Backlit",
+            parameters: []
+        }, {
+            id: "decreaseBacklit",
+            label: "Decrease Backlit",
+            parameters: []
         }],
         state: [{
             id: "text",
@@ -51,6 +59,12 @@ module.exports = {
         }, {
             id: "column",
             label: "Column",
+            type: {
+                id: "integer"
+            }
+        }, {
+            id: "backlit",
+            label: "Backlit Percentage",
             type: {
                 id: "integer"
             }
@@ -104,12 +118,19 @@ module.exports = {
             },
             defaultValue: "7"
         }, {
-            label: "Backlit",
-            id: "backlit",
+            label: "# Rows",
+            id: "rows",
             type: {
                 id: "integer"
             },
-            defaultValue: "18"
+            defaultValue: "2"
+        }, {
+            label: "# Columns",
+            id: "columns",
+            type: {
+                id: "integer"
+            },
+            defaultValue: "16"
         }]
     },
     create: function () {
@@ -140,7 +161,8 @@ function Lcd() {
         this.state = {
             text: null,
             column: 0,
-            row: 0
+            row: 0,
+            backlit: 100
         }
 
         if (!this.isSimulated()) {
@@ -168,7 +190,7 @@ function Lcd() {
                 deferred.resolve();
             } catch (error) {
                 console.error("Cannot initialize real LCD: "
-                + error);
+                    + error);
 
                 deferred.reject("Cannot initialize LCD: " + error);
             }
@@ -203,9 +225,10 @@ function Lcd() {
      *
      */
     Lcd.prototype.clear = function () {
-        this.state.text = null;
+        this.state.text = '                                ';
         this.state.row = 0;
         this.state.column = 0;
+        this.state.backlit = 0;
 
         if (this.lcd) {
             this.lcd.clear();
@@ -224,7 +247,21 @@ function Lcd() {
 
         // In case a number was submitted
 
-        this.state.text = new String(parameters.text);
+        parameters.text = new String(parameters.text);
+
+        var index = 16 * this.state.row + this.state.column;
+
+        this.state.text = this.state.text.substr(0, index) + parameters.text + this.state.text.substr(index + parameters.text.length + 1);
+        this.state.text = this.state.text.substr(0, 32);
+        this.state.row = index + parameters.text.length / 16;
+        this.state.column = index + parameters.text.length % 16;
+
+        // Reset in case of overflow
+
+        if (this.state.row > 1) {
+            this.state.row = 0;
+            this.state.column = 0;
+        }
 
         if (this.lcd) {
             // TODO
@@ -245,6 +282,24 @@ function Lcd() {
         if (this.lcd) {
             this.lcd.cursor(this.state.row, this.state.column);
         }
+
+        this.publishStateChange();
+    };
+
+    /**
+     *
+     */
+    Lcd.prototype.increaseBacklit = function () {
+        this.state.backlit = Math.min(this.state.backlit + 10, 100);
+
+        this.publishStateChange();
+    };
+
+    /**
+     *
+     */
+    Lcd.prototype.decreaseBacklit = function () {
+        this.state.backlit = Math.max(this.state.backlit - 10, 0);
 
         this.publishStateChange();
     };

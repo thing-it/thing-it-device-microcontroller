@@ -1,40 +1,133 @@
-<div class="lcd">
-	<table style="border: 1px solid white; color: white;">
+<style>
+	.lcd table {
+		border: 1px solid #888888;
+		border-collapse: collapse;
+	}
+
+	.lcd td {
+		border: 1px solid #888888;
+	}
+
+	.lcd .matrix {
+		min-width: 15px;
+		width: 15px;
+		min-height: 20px;
+		height: 20px;
+		font-family: monospace;
+		font-size: 1em;
+		color: #000000;
+	}
+
+</style>
+<div class="lcd flexLayout">
+	<table class="flexGrow1" style="border: 1px solid white; background-color: rgba(220, 220, 220,{{1 - component._state.backlit / 100}});">
 		<tr>
-			<td><div class="matrix">{{component._state.text.chartAt(0)}}</div></td>
-			<td><div class="matrix">{{component._state.text.chartAt(1)}}</div></td>
-			<td><div class="matrix">{{component._state.text.chartAt(2)}}</div></td>
-			<td><div class="matrix">{{component._state.text.chartAt(3)}}</div></td>
-			<td><div class="matrix">{{component._state.text.chartAt(4)}}</div></td>
-			<td><div class="matrix">{{component._state.text.chartAt(5)}}</div></td>
-			<td><div class="matrix">{{component._state.text.chartAt(6)}}</div></td>
-			<td><div class="matrix">{{component._state.text.chartAt(7)}}</div></td>
-			<td><div class="matrix">{{component._state.text.chartAt(8)}}</div></td>
-			<td><div class="matrix">{{component._state.text.chartAt(9)}}</div></td>
-			<td><div class="matrix">{{component._state.text.chartAt(10)}}</div></td>
-			<td><div class="matrix">{{component._state.text.chartAt(11)}}</div></td>
-			<td><div class="matrix">{{component._state.text.chartAt(12)}}</div></td>
-			<td><div class="matrix">{{component._state.text.chartAt(13)}}</div></td>
-			<td><div class="matrix">{{component._state.text.chartAt(14)}}</div></td>
-			<td><div class="matrix">{{component._state.text.chartAt(15)}}</div></td>
+			<td>
+				<div class="matrix">{{component._state.text.charAt(0)}}</div>
+			</td>
+			<td>
+				<div class="matrix">{{component._state.text.charAt(1)}}</div>
+			</td>
+			<td>
+				<div class="matrix">{{component._state.text.charAt(2)}}</div>
+			</td>
+			<td>
+				<div class="matrix">{{component._state.text.charAt(3)}}</div>
+			</td>
+			<td>
+				<div class="matrix">{{component._state.text.charAt(4)}}</div>
+			</td>
+			<td>
+				<div class="matrix">{{component._state.text.charAt(5)}}</div>
+			</td>
+			<td>
+				<div class="matrix">{{component._state.text.charAt(6)}}</div>
+			</td>
+			<td>
+				<div class="matrix">{{component._state.text.charAt(7)}}</div>
+			</td>
+			<td>
+				<div class="matrix">{{component._state.text.charAt(8)}}</div>
+			</td>
+			<td>
+				<div class="matrix">{{component._state.text.charAt(9)}}</div>
+			</td>
+			<td>
+				<div class="matrix">{{component._state.text.charAt(10)}}</div>
+			</td>
+			<td>
+				<div class="matrix">{{component._state.text.charAt(11)}}</div>
+			</td>
+			<td>
+				<div class="matrix">{{component._state.text.charAt(12)}}</div>
+			</td>
+			<td>
+				<div class="matrix">{{component._state.text.charAt(13)}}</div>
+			</td>
+			<td>
+				<div class="matrix">{{component._state.text.charAt(14)}}</div>
+			</td>
+			<td>
+				<div class="matrix">{{component._state.text.charAt(15)}}</div>
+			</td>
 		</tr>
 		<tr>
-			<td><div class="matrix">{{component._state.text.chartAt(16)}}</div></td>
-			<td><div class="matrix">{{component._state.text.chartAt(17)}}</div></td>
-			<td><div class="matrix">{{component._state.text.chartAt(18)}}</div></td>
-			<td><div class="matrix">{{component._state.text.chartAt(19)}}</div></td>
-			<td><div class="matrix">{{component._state.text.chartAt(20)}}</div></td>
-			<td><div class="matrix">{{component._state.text.chartAt(21)}}</div></td>
-			<td><div class="matrix">{{component._state.text.chartAt(22)}}</div></td>
-			<td><div class="matrix">{{component._state.text.chartAt(23)}}</div></td>
-			<td><div class="matrix">{{component._state.text.chartAt(24)}}</div></td>
-			<td><div class="matrix">{{component._state.text.chartAt(25)}}</div></td>
-			<td><div class="matrix">{{component._state.text.chartAt(26)}}</div></td>
-			<td><div class="matrix">{{component._state.text.chartAt(27)}}</div></td>
-			<td><div class="matrix">{{component._state.text.chartAt(28)}}</div></td>
-			<td><div class="matrix">{{component._state.text.chartAt(29)}}</div></td>
-			<td><div class="matrix">{{component._state.text.chartAt(30)}}</div></td>
-			<td><div class="matrix">{{component._state.text.chartAt(31)}}</div></td>
+			<td>
+				<div class="matrix">{{component._state.text.charAt(16)}}</div>
+			</td>
+			<td>
+				<div class="matrix">{{component._state.text.charAt(17)}}</div>
+			</td>
+			<td>
+				<div class="matrix">{{component._state.text.charAt(18)}}</div>
+			</td>
+			<td>
+				<div class="matrix">{{component._state.text.charAt(19)}}</div>
+			</td>
+			<td>
+				<div class="matrix">{{component._state.text.charAt(20)}}</div>
+			</td>
+			<td>
+				<div class="matrix">{{component._state.text.charAt(21)}}</div>
+			</td>
+			<td>
+				<div class="matrix">{{component._state.text.charAt(22)}}</div>
+			</td>
+			<td>
+				<div class="matrix">{{component._state.text.charAt(23)}}</div>
+			</td>
+			<td>
+				<div class="matrix">{{component._state.text.charAt(24)}}</div>
+			</td>
+			<td>
+				<div class="matrix">{{component._state.text.charAt(25)}}</div>
+			</td>
+			<td>
+				<div class="matrix">{{component._state.text.charAt(26)}}</div>
+			</td>
+			<td>
+				<div class="matrix">{{component._state.text.charAt(27)}}</div>
+			</td>
+			<td>
+				<div class="matrix">{{component._state.text.charAt(28)}}</div>
+			</td>
+			<td>
+				<div class="matrix">{{component._state.text.charAt(29)}}</div>
+			</td>
+			<td>
+				<div class="matrix">{{component._state.text.charAt(30)}}</div>
+			</td>
+			<td>
+				<div class="matrix">{{component._state.text.charAt(31)}}</div>
+			</td>
 		</tr>
 	</table>
+	<div class="marginLeft1">
+		<div class="flexLayout flexJustifyCenter"><a ng-click="panel.callActorService(component, 'increaseBacklit')"><i
+				class="mode icon sl-lightbulb-2 fontSize1_5"></i></a></div>
+		<div class="flexLayout flexJustifyCenter primaryColor" style="width: 4em;">{{component._state.backlit}} %</div>
+		<div class="flexLayout flexJustifyCenter"><a ng-click="panel.callActorService(component, 'decreaseBacklit')"><i
+				class="mode icon sl-lightbulb-2"></i></a>
+		</div>
+	</div>
 </div>

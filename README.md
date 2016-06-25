@@ -1,14 +1,14 @@
-# thing-it-device-arduino
+# thing-it-device-microcontrolle
 
 [![NPM](https://nodei.co/npm/thing-it-device-microcontroller.png)](https://nodei.co/npm/thing-it-device-microcontroller/)
 [![NPM](https://nodei.co/npm-dl/thing-it-device-microcontroller.png)](https://nodei.co/npm/thing-it-device-microcontroller/)
 
-[thing-it-node] Device Plugin for Microcontrollers (Arduino Uno and others).
+[thing-it-node] Device Plugin for Microcontrollers (Arduino Uno and others) as well as GPIO access for Single-board Computers like Raspberry Pi or C.H.I.P.
 
 This allows you to 
 
-* control the microcontroller configurations devices over the Internet,
-* define complex services, event processing, storyboards and Jobs combining the microcontroller with other Devices, Sensors and Actors. 
+* control the Microcontroller configuration over the Internet,
+* define complex services, event processing, storyboards and Jobs combining the Microcontroller and its connected Devices, Actors and Sensors with other Devices, Sensors and Actors. 
 
 by means of [thing-it-node](https://github.com/marcgille/thing-it-node) and [thing-it.com](http://www.thing-it.com).
 

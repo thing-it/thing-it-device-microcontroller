@@ -78,7 +78,14 @@ module.exports = {
         actorTypes: [],
         sensorTypes: [],
         services: [],
-        configuration: [] // TODO Add Connection Type
+        configuration: [{
+            id: "fiveBoard",
+            label: "Five Board",
+            type: {
+                id: "string"
+            },
+            default: "arduino"
+        }]
     },
     create: function (device) {
         return new Microcontroller();
@@ -91,6 +98,7 @@ function Microcontroller() {
     /**
      *
      */
+
     Microcontroller.prototype.start = function () {
         var deferred = q.defer();
 
@@ -99,9 +107,23 @@ function Microcontroller() {
         } else {
             var five = require("johnny-five");
 
-            this.logDebug("Bind Microcontroller.");
+            if (this.configuration.fiveBoard = "pi") {
 
-            this.board = new five.Board();
+                var Raspi = require("raspi-io");
+
+                this.logDebug("Bind Microcontroller -> Raspberry Pi.");
+
+                this.board = new five.Board({
+                    io: new Raspi()
+                });
+
+            } else if (this.configuration.fiveBoard = "arduino") {
+
+                this.logDebug("Bind Microcontroller -> Arduino");
+
+                this.board = new five.Board();
+
+            }
 
             this.board.on("ready", function () {
                 this.logDebug("Microcontroller ready.");
@@ -120,6 +142,7 @@ function Microcontroller() {
 
         return deferred.promise;
     };
+
 
     /**
      *

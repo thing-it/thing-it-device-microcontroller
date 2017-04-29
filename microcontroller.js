@@ -79,12 +79,12 @@ module.exports = {
         sensorTypes: [],
         services: [],
         configuration: [{
-            id: "fiveBoard",
-            label: "Five Board",
+            label: "Board Type",
+            id: "boardType",
             type: {
-                id: "string"
+                String: ""  //TODO Change to Enumeration
             },
-            default: "arduino"
+            defaultValue: ""
         }]
     },
     create: function (device) {
@@ -107,7 +107,9 @@ function Microcontroller() {
         } else {
             var five = require("johnny-five");
 
-            if (this.configuration.fiveBoard = "pi") {
+            this.logDebug(this.configuration);
+
+            if (this.configuration.boardType === "pi") {
 
                 var Raspi = require("raspi-io");
 
@@ -117,7 +119,7 @@ function Microcontroller() {
                     io: new Raspi()
                 });
 
-            } else if (this.configuration.fiveBoard = "arduino") {
+            } else {
 
                 this.logDebug("Bind Microcontroller -> Arduino");
 

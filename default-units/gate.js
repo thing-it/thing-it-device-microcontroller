@@ -1,0 +1,164 @@
+module.exports = {
+    metadata: {
+        plugin: "gate",
+        label: "Gate",
+        role: "actor",
+        family: "light",
+        deviceTypes: ["microcontroller/microcontroller"],
+        services: [{
+            id: "on",
+            label: "On"
+        }, {
+            id: "off",
+            label: "Off"
+        }, {
+            id: "blink",
+            label: "Blink"
+        }],
+        state: [{
+            id: "light",
+            label: "Light",
+            type: {
+                id: "string"
+            }
+        }],
+        configuration: [{
+            label: "Pin",
+            id: "pin",
+            type: {
+                family: "reference",
+                id: "digitalInOutPin"
+            },
+            defaultValue: "12"
+        }]
+    },
+    create: function () {
+        return new Gate();
+    }
+};
+
+var q = require('q');
+
+/**
+ *
+ */
+function Gate() {
+    /**
+     *
+     */
+    Gate.prototype.start = function () {
+        var deferred = q.defer();
+
+        this.state = {
+            light: "off"
+        };
+
+        if (!this.isSimulated()) {
+            try {
+                var five = require("johnny-five");
+
+                this.led = new five.Led(this.configuration.pin);
+
+                this.logDebug("Gate initialized.");
+
+                deferred.resolve();
+            } catch (error) {
+                this.device.node
+                    .publishMessage("Cannot initialize "
+                    + this.device.id + "/" + this.id
+                    + ":" + error);
+
+                deferred.reject(error);
+            }
+        }
+        else {
+            deferred.resolve();
+        }
+
+        return deferred.promise;
+    };
+
+    /**
+     *
+     */
+    Gate.prototype.getState = function () {
+        return this.state;
+    };
+
+    /**
+     *
+     */
+    Gate.prototype.setState = function (state) {
+        this.state.light = state.light;
+
+        if (this.led) {
+            if (this.state.light == "blink") {
+                this.led.blink();
+            } else if (this.state.light == "on") {
+                this.led.on();
+            } else {
+                this.led.stop().off();
+            }
+        }
+    };
+
+    /**
+     *
+     */
+    Gate.prototype.on = function () {
+        if (this.led) {
+            this.led.on();
+        }
+
+        this.state.light = "on";
+
+        this.publishStateChange();
+    };
+
+    /**
+     *
+     */
+    Gate.prototype.off = function () {
+        if (this.led) {
+            this.led.stop().off();
+        }
+
+        this.state.light = "off";
+
+        this.publishStateChange();
+    };
+
+    /**
+     *
+     */
+    Gate.prototype.toggle = function () {
+        if (this.state.light == "off") {
+            this.state.light = "on";
+
+            if (this.led) {
+                this.led.on();
+            }
+        } else {
+            this.state.light = "off";
+
+            if (this.led) {
+                this.led.stop().off();
+            }
+        }
+
+        this.publishStateChange();
+    };
+
+    /**
+     *
+     */
+    Gate.prototype.blink = function () {
+        if (this.led) {
+            this.led.blink();
+        }
+
+        this.state.light = "blink";
+
+        this.publishStateChange();
+    }
+}

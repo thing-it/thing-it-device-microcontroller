@@ -1,4 +1,4 @@
-# thing-it-device-microcontrolle
+# thing-it-device-microcontroller
 
 [![NPM](https://nodei.co/npm/thing-it-device-microcontroller.png)](https://nodei.co/npm/thing-it-device-microcontroller/)
 [![NPM](https://nodei.co/npm-dl/thing-it-device-microcontroller.png)](https://nodei.co/npm/thing-it-device-microcontroller/)

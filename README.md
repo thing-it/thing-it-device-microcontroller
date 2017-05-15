@@ -16,7 +16,7 @@ by means of [thing-it-node](https://github.com/marcgille/thing-it-node) and [thi
 
 After you have 
 
-* [set up](http://www.thing-it.com/thing-it/index.html?document=gettingStarted#/documentationPanel) your [thing-it] Node Box and 
+* [set up](https://github.com/marcgille/thing-it-node/wiki/General-Installation) your [thing-it] Node Box and 
 * configured or copied a [thing-it] Mesh with a TI SensorTag, 
 
 connect your microcontroller to your [thing-it] Node Box via a USB cable.

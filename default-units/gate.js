@@ -34,7 +34,7 @@ module.exports = {
     },
     create: function () {
         return new Gate();
-    }
+    }//
 };
 
 var q = require('q');

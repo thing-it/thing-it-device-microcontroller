@@ -1,10 +1,22 @@
-<div>
-	<i class="lightOn titleIcon fa fa-circle"
-		ng-show="component._state.light == 'on'"></i><i
-		class="lightBlink titleIcon fa fa-circle"
-		ng-show="component._state.light == 'blink'"></i><i
-		class="lightOff titleIcon fa fa-circle"
-		ng-show="!component._state || component._state.light == 'off'"></i>
+<div class="flexLayout flexDirectionColumn flexJustifyCenter flexAlignCenter">
+    <div class="flexLayout flexAlignCenter flexJustifyCenter flexGrow1">
+        <div class="circleButton marginLeft0_5" style="display: inline-block;"
+             ng-click="panel.callActorService(component, 'openForTime')">
+            <i class="fa fa-car"></i>
+        </div>
+
+        <div class="marginLeft0_5 flexGrow1">
+            <span ng-if="component._state.gateClosed" class="lightPrimaryColor">
+                <i class="fa-stack fa-lg"></i>
+                <i class="fa fa-road fa-stack-1x"></i>
+                <i class="fa fa-ban fa-stack-2x" style="color:red;"></i>
+            </span>
+            <span ng-if="component._state.gateOpen" class="lightPrimaryColor">
+                <i class="fa-stack fa-3x"></i>
+                <i class="fa fa-road fa-stack-1x"></i>
+                <i class="fa fa-check fa-stack-2x" style="color:green;"></i>
+            </span>
+        </div>
+    </div>
 </div>
 
-<button class="pushButton" ng-click="panel.pushSensorEvent(component, 'on')">{{component.label}}</button>

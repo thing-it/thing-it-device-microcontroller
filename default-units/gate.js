@@ -6,20 +6,20 @@ module.exports = {
         family: "light",
         deviceTypes: ["microcontroller/microcontroller"],
         services: [{
-            id: "on",
-            label: "On"
+            id: "open",
+            label: "Open"
         }, {
-            id: "off",
-            label: "Off"
+            id: "close",
+            label: "Close"
         }, {
-            id: "blink",
-            label: "Blink"
+            id: "openForTime",
+            label: "Open for Time"
         }],
         state: [{
-            id: "light",
-            label: "Light",
+            id: "gateStatus",
+            label: "Gate Status",
             type: {
-                id: "string"
+                id: "Boolean"
             }
         }],
         configuration: [{
@@ -50,7 +50,7 @@ function Gate() {
         var deferred = q.defer();
 
         this.state = {
-            light: "off"
+            gateStatus: false
         };
 
         if (!this.isSimulated()) {
@@ -65,8 +65,8 @@ function Gate() {
             } catch (error) {
                 this.device.node
                     .publishMessage("Cannot initialize "
-                    + this.device.id + "/" + this.id
-                    + ":" + error);
+                        + this.device.id + "/" + this.id
+                        + ":" + error);
 
                 deferred.reject(error);
             }
@@ -89,12 +89,10 @@ function Gate() {
      *
      */
     Gate.prototype.setState = function (state) {
-        this.state.light = state.light;
+        this.state.gateStatus = state.light;//TODO????########################################
 
         if (this.led) {
-            if (this.state.light == "blink") {
-                this.led.blink();
-            } else if (this.state.light == "on") {
+            if (this.state.gateStatus) {
                 this.led.on();
             } else {
                 this.led.stop().off();
@@ -105,60 +103,57 @@ function Gate() {
     /**
      *
      */
-    Gate.prototype.on = function () {
+    Gate.prototype.open = function () {
         if (this.led) {
             this.led.on();
         }
 
-        this.state.light = "on";
+        this.state = {
+            gateStatus: true
+        };
+
+
+        setTimeout(function () {
+            this.open();
+            this.publishStateChange();
+
+        }, 5000);
+
+
 
         this.publishStateChange();
     };
 
+
+    Gate.prototype.openForTime = function () {
+        if (this.led) {
+            this.led.on();
+        }
+
+        this.state = {
+            gateStatus: true
+        };
+
+        this.publishStateChange();
+    };
+
+
+
+
+
+
     /**
      *
      */
-    Gate.prototype.off = function () {
+    Gate.prototype.close = function () {
         if (this.led) {
             this.led.stop().off();
         }
 
-        this.state.light = "off";
+        this.state = {
+            gateStatus: false
+        };
 
         this.publishStateChange();
     };
-
-    /**
-     *
-     */
-    Gate.prototype.toggle = function () {
-        if (this.state.light == "off") {
-            this.state.light = "on";
-
-            if (this.led) {
-                this.led.on();
-            }
-        } else {
-            this.state.light = "off";
-
-            if (this.led) {
-                this.led.stop().off();
-            }
-        }
-
-        this.publishStateChange();
-    };
-
-    /**
-     *
-     */
-    Gate.prototype.blink = function () {
-        if (this.led) {
-            this.led.blink();
-        }
-
-        this.state.light = "blink";
-
-        this.publishStateChange();
-    }
 }

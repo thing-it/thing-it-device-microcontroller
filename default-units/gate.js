@@ -89,7 +89,7 @@ function Gate() {
      *
      */
     Gate.prototype.setState = function (state) {
-        this.state.gateStatus = state.light;//TODO????########################################
+        this.state.gateStatus = state.gateStatus;
 
         if (this.led) {
             if (this.state.gateStatus) {
@@ -108,39 +108,25 @@ function Gate() {
             this.led.on();
         }
 
-        this.state = {
-            gateStatus: true
-        };
-
-
-        setTimeout(function () {
-            this.open();
-            this.publishStateChange();
-
-        }, 5000);
-
-
+        this.state.gateStatus = true;
 
         this.publishStateChange();
     };
 
-
+    /**
+     *
+     */
     Gate.prototype.openForTime = function () {
         if (this.led) {
-            this.led.on();
+
+            this.open();
+
+            setTimeout(function () {
+                this.close();
+            }, 5000);
+
         }
-
-        this.state = {
-            gateStatus: true
-        };
-
-        this.publishStateChange();
     };
-
-
-
-
-
 
     /**
      *
@@ -150,9 +136,7 @@ function Gate() {
             this.led.stop().off();
         }
 
-        this.state = {
-            gateStatus: false
-        };
+        this.state.gateStatus = false;
 
         this.publishStateChange();
     };

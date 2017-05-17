@@ -92,9 +92,9 @@ function Led() {
         this.state.light = state.light;
 
         if (this.led) {
-            if (this.state.light == "blink") {
+            if (this.state.light === "blink") {
                 this.led.blink();
-            } else if (this.state.light == "on") {
+            } else if (this.state.light === "on") {
                 this.led.on();
             } else {
                 this.led.stop().off();

@@ -6,7 +6,7 @@ module.exports = {
         label: "GPIO Microcontroller",
         connectionTypes: ["USB", "ZigBee", "Ethernet", "Wifi", "Built-in"],
         dataTypes: {
-            digitalInOutPin: {
+            digitalInOutPin: {//TODO Add Microcontroller typ for differend IO types
                 family: "enumeration",
                 values: [{
                     id: "0",

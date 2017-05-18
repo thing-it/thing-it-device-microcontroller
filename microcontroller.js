@@ -73,20 +73,25 @@ module.exports = {
                     id: "A5",
                     label: "A5"
                 }]
+            },
+            boardType: {
+                family: "enumeration",
+                values: [{
+                    id: "RASPBERRY",
+                    label: "Raspberry Pi"
+                }, {
+                    id: "ARDUINO",
+                    label: "Arduino"
+                }]
             }
         },
         actorTypes: [],
         sensorTypes: [],
         services: [],
-        configuration: [{
-            label: "Board Type",
-            id: "boardType",
-            type: {
-                String: ""  //TODO Change to Enumeration
-            },
-            defaultValue: ""
-        }]
+        configuration: []
     },
+
+
     create: function (device) {
         return new Microcontroller();
     }
@@ -109,23 +114,28 @@ function Microcontroller() {
 
             this.logDebug(this.configuration);
 
-            if (this.configuration.boardType === "pi") {
+            switch (this.configuration.boardType) {
 
-                var Raspi = require("raspi-io");
+                case "RASPBERRY":
+                    this.logDebug("Bind Microcontroller -> Raspberry Pi.");
 
-                this.logDebug("Bind Microcontroller -> Raspberry Pi.");
+                    var Raspi = require("raspi-io");
 
-                this.board = new five.Board({
-                    io: new Raspi()
-                });
+                    this.board = new five.Board({
+                        io: new Raspi()
+                    });
 
-            } else {
+                    break;
 
-                this.logDebug("Bind Microcontroller -> Arduino");
 
-                this.board = new five.Board();
+                case "ARDUINO":
+                    this.logDebug("Bind Microcontroller -> Arduino");
 
+                    this.board = new five.Board();
+
+                    break;
             }
+
 
             this.board.on("ready", function () {
                 this.logDebug("Microcontroller ready.");
@@ -158,4 +168,16 @@ function Microcontroller() {
      */
     Microcontroller.prototype.setState = function () {
     };
+
+    /**
+     *
+     */
+
+    Microcontroller.prototype.stop = function () {
+        //TODO implement after adding to firmata -> https://github.com/rwaldron/johnny-five/issues/617
+    };
+
+    /**
+     *
+     */
 }

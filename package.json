@@ -16,9 +16,6 @@
     "q": "^1.4.1",
     "serialport": "^4.0.7"
   },
-  "optionalDependencies": {
-    "raspi-io": "^8.0.1"
-  },
   "devDependencies": {
     "thing-it-test": "0.0.13"
   }

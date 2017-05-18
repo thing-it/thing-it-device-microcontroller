@@ -3,7 +3,7 @@ module.exports = {
         plugin: "gate",
         label: "Gate",
         role: "actor",
-        family: "light",
+        family: "gate",
         deviceTypes: ["microcontroller/microcontroller"],
         services: [{
             id: "open",

@@ -109,7 +109,6 @@ function Gate() {
         }
 
         this.state.gateStatus = true;
-
         this.publishStateChange();
     };
 
@@ -118,13 +117,11 @@ function Gate() {
      */
     Gate.prototype.openForTime = function () {
         if (this.led) {
-
+            var that = this;
             this.open();
-
             setTimeout(function () {
-                this.close();
-            }, 5000);
-
+                that.close();
+            }, 10000);
         }
     };
 
@@ -135,7 +132,6 @@ function Gate() {
         if (this.led) {
             this.led.stop().off();
         }
-
         this.state.gateStatus = false;
 
         this.publishStateChange();

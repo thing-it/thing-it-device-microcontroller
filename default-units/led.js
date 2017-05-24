@@ -113,7 +113,7 @@ function Led() {
         this.state.light = "on";
 
         this.publishStateChange();
-    }
+    };
 
     /**
      *
@@ -126,7 +126,7 @@ function Led() {
         this.state.light = "off";
 
         this.publishStateChange();
-    }
+    };
 
     /**
      *

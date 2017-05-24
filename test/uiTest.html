@@ -1,0 +1,63 @@
+<!doctype html>
+<html ng-app="testApp">
+<head>
+    <link href="https://www.thing-it.com/thing-it/css/fonts/titillium-web.css"
+          rel="stylesheet" type="text/css">
+    <link href="https://www.thing-it.com/thing-it/css/fonts/oswald.css" rel="stylesheet" type="text/css">
+    <link href="https://www.thing-it.com/thing-it/css/fonts/streamline.css" rel="stylesheet" type="text/css">
+    <link href="https://www.thing-it.com/thing-it/css/bpmn/bpmn.css" rel="stylesheet" type="text/css">
+    <!--
+    <link rel="stylesheet"
+          href="https://www.thing-it.com/thing-it//css/thirdparty/font-awesome/css/font-awesome.min.css">
+    -->
+
+    <link rel="stylesheet"
+          href="http://fontawesome.io/assets/font-awesome/css/font-awesome.css">
+
+    <!--
+    <link rel="stylesheet" href="https://www.thing-it.com/bower_components/pdf.js-viewer/viewer.css" style="cursor: default;">
+    -->
+
+    <link rel="stylesheet" href="https://www.thing-it.com/thing-it-node/www/css/ion.rangeSlider.css"
+          style="cursor: default;">
+    <link rel="stylesheet" href="https://www.thing-it.com/thing-it-node/www/css/ion.rangeSlider.skinHTML5.css"
+          style="cursor: default;">
+    <link rel="stylesheet" href="https://www.thing-it.com/thing-it-node/www/css/normalize.css" style="cursor: default;">
+    <link rel="stylesheet" href="https://www.thing-it.com/thing-it-node/www/css/spectrum.css" style="cursor: default;">
+    <link rel="stylesheet" href="https://www.thing-it.com/thing-it-node/www/css/jquery.jqplot.css"
+          style="cursor: default;">
+    <link rel="stylesheet" href="https://www.thing-it.com/thing-it-node/www/css/responsive.min.css"
+          style="cursor: default;">
+    <link rel="stylesheet" href="https://www.thing-it.com/thing-it-node/www/css/thing-it-plugins.min.css"
+          style="cursor: default;">
+
+    <link rel="stylesheet" href="https://www.thing-it.com/thing-it//css/thing-it-portal.css" type="text/css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.0/angular.min.js"></script>
+    <script src="https://www.thing-it.com/thing-it//js/libs/thing-it/thing-it-test.js"></script>
+
+    <!--TODO replace with proper thing-it.com reference.-->
+    <script src="./PluginDirectives.js"></script>
+
+    <script src="./uiTest.js"></script>
+
+
+</head>
+<body>
+<div class="padding1" ng-controller="TestController as test">
+    <h1>Microcontroller LED</h1>
+    <div ng-repeat="panel in [test.panel]">
+        <div class="formSection flexLayout flexJustifyCenter" style="width: 40em;"
+             ng-repeat="component in [test.led]"
+             ng-include="'../web/light.html'"></div>
+    </div>
+
+    <h1>Microcontroller Gate</h1>
+    <div ng-repeat="panel in [test.panel]">
+        <div class="formSection flexLayout flexJustifyCenter" style="width: 40em;"
+             ng-repeat="component in [test.gate]"
+             ng-include="'../web/gate.html'"></div>
+    </div>
+
+</div>
+</body>
+</html>

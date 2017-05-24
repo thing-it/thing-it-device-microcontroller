@@ -1,22 +1,32 @@
-<div class="flexLayout flexDirectionColumn flexJustifyCenter flexAlignCenter">
-    <div class="flexLayout flexAlignCenter flexJustifyCenter flexGrow1">
+<div class="flexLayout flexDirectionColumn flexJustifyCenter flexAlignCenter marginLeft0_5">
+    <div class="flexLayout flexAlignCenter flexJustifyCenter flexGrow1 marginTop0_5">
         <div class="circleButton marginLeft0_5" style="display: inline-block;"
              ng-click="panel.callActorService(component, 'openForTime')">
-            <i class="fa fa-car"></i>
+            <i class="fa fa-car fa-1x"></i>
         </div>
 
-        <div class="marginLeft0_5 flexGrow1">
-            <span ng-if="!component._state.gateStatus" class="lightPrimaryColor">
-                <i class="fa-stack fa-lg"></i>
-                <i class="fa fa-road fa-stack-1x"></i>
-                <i class="fa fa-ban fa-stack-2x" style="color:red;"></i>
-            </span>
-            <span ng-if="component._state.gateStatus" class="lightPrimaryColor">
-                <i class="fa-stack fa-3x"></i>
-                <i class="fa fa-road fa-stack-1x"></i>
-                <i class="fa fa-check fa-stack-2x" style="color:green;"></i>
-            </span>
+        <div class="flexLayout flexDirectionColumn flexJustifyCenter flexAlignCenter marginLeft0_5">
+                <div class="flexGrow1 flexAlignTop marginLeft0_5">
+                    <div class="flexGrow1 flexAlignTop marginLeft0_5" style="display: inline-block;"
+                         ng-if="!component._state.gateStatus" class="lightPrimaryColor">
+                        <span class="fa-stack fa-2x">
+                        <i class="fa fa-road fa-2x fa-stack-1x" style="color:darkgray;"></i>
+                        <i class="fa fa-ban fa-2x fa-stack-2x" style="color:red;"></i>
+                    </span>
+                    </div>
+                </div>
+
+            <div class="flexGrow1 flexAlignTop marginLeft0_5">
+                <div class="flexGrow1 flexAlignTop marginLeft0_5" style="display: inline-block;"
+                     ng-if="component._state.gateStatus" class="lightPrimaryColor">
+                        <span class="fa-stack fa-2x">
+                        <i class="fa fa-road fa-2x fa-stack-1x" style="color:darkgray;"></i>
+                        <i class="fa fa-arrow-circle-o-up fa-2x fa-stack-2x" style="color:lawngreen;"></i>
+                    </span>
+                </div>
+            </div>
+
+
         </div>
     </div>
 </div>
-

@@ -84,7 +84,15 @@ module.exports = {
                     label: "Arduino"
                 }]
             }
-        },
+        }, configuration: [{
+            label: "Board Type",
+            id: "boardType",
+            type: {
+                family: "reference",
+                id: "boardType"
+            },
+            defaultValue: "RASPBERRY"
+        }],
         actorTypes: [],
         sensorTypes: [],
         services: [],

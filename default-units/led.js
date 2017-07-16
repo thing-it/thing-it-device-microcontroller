@@ -64,14 +64,13 @@ function Led() {
                 deferred.resolve();
             } catch (error) {
                 this.device.node
-                    .publishMessage("Cannot initialize "
-                    + this.device.id + "/" + this.id
-                    + ":" + error);
+                    .publishMessage("Cannot initialize " +
+                        this.device.id + "/" + this.id +
+                        ":" + error);
 
                 deferred.reject(error);
             }
-        }
-        else {
+        } else {
             deferred.resolve();
         }
 
@@ -95,6 +94,7 @@ function Led() {
             if (this.state.light === "blink") {
                 this.led.blink();
             } else if (this.state.light === "on") {
+                this.led.stop();
                 this.led.on();
             } else {
                 this.led.stop().off();
@@ -107,6 +107,7 @@ function Led() {
      */
     Led.prototype.on = function () {
         if (this.led) {
+            this.led.stop();
             this.led.on();
         }
 
@@ -136,6 +137,7 @@ function Led() {
             this.state.light = "on";
 
             if (this.led) {
+                this.led.stop()
                 this.led.on();
             }
         } else {

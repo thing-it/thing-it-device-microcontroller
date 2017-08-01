@@ -77,8 +77,8 @@ function Relay() {
             } catch (error) {
                 this.device.node
                     .publishMessage("Cannot initialize "
-                    + this.device.id + "/" + this.id
-                    + ":" + error);
+                        + this.device.id + "/" + this.id
+                        + ":" + error);
 
                 deferred.reject(error);
             }
@@ -116,36 +116,62 @@ function Relay() {
      *
      */
     Relay.prototype.open = function () {
-        if (this.relay) {
-            this.relay.open();
+
+        try {
+            if (this.relay) {
+                this.relay.open();
+            }
+            this.state.gate = true;
+            this.publishStateChange();
+        }
+        catch (err) {
+            console.log("########### Error in Microcontroller Actor. For safty reasons TIN is shutting down ###########");
+            process.exit();
         }
 
-        this.state.gate = true;
-
-        this.publishStateChange();
     };
 
     /**
      *
      */
     Relay.prototype.close = function () {
-        if (this.relay) {
-            this.relay.close();
+
+        try {
+            if (this.relay) {
+                this.relay.close();
+            }
+            this.state.gate = false;
+            this.publishStateChange();
+        }
+        catch (err) {
+            console.log("########### Error in Microcontroller Actor. For safty reasons TIN is shutting down ###########");
+            process.exit();
         }
 
-        this.state.gate = false;
-
-        this.publishStateChange();
     };
 
     /**
      *
      */
     Relay.prototype.toggle = function () {
-        if (this.state.gate) {
-            this.close();
-        } else {
-            this.open();
+        try {
+            if (this.state.gate) {
+                this.close();
+            } else {
+                this.open();
+            }
+
+        } catch (err) {
+            console.log("########### Error in Microcontroller Actor. For safty reasons TIN is shutting down ###########");
+            process.exit();
         }
+    }
+
+
+    /**
+     *
+     */
+    Relay.prototype.stop = function () {
+        this.relay = null;
     }
 };

@@ -106,61 +106,94 @@ function Led() {
      *
      */
     Led.prototype.on = function () {
-        if (this.led) {
-            this.led.stop();
-            this.led.on();
+
+        try {
+            if (this.led) {
+                this.led.stop();
+                this.led.on();
+            }
+
+            this.state.light = "on";
+
+            this.publishStateChange();
         }
-
-        this.state.light = "on";
-
-        this.publishStateChange();
+        catch (err) {
+            console.log("########### Error in Microcontroller Actor. For safty reasons TIN is shutting down ###########");
+            process.exit();
+        }
     };
 
     /**
      *
      */
     Led.prototype.off = function () {
-        if (this.led) {
-            this.led.stop().off();
+
+        try {
+
+            if (this.led) {
+                this.led.stop().off();
+            }
+
+            this.state.light = "off";
+
+            this.publishStateChange();
         }
-
-        this.state.light = "off";
-
-        this.publishStateChange();
+        catch (err) {
+            console.log("########### Error in Microcontroller Actor. For safty reasons TIN is shutting down ###########");
+            process.exit();
+        }
     };
 
     /**
      *
      */
     Led.prototype.toggle = function () {
-        if (this.state.light == "off") {
-            this.state.light = "on";
 
-            if (this.led) {
-                this.led.stop()
-                this.led.on();
-            }
-        } else {
-            this.state.light = "off";
+        try {
+            if (this.state.light == "off") {
+                this.state.light = "on";
 
-            if (this.led) {
-                this.led.stop().off();
+                if (this.led) {
+                    this.led.stop()
+                    this.led.on();
+                }
+            } else {
+                this.state.light = "off";
+
+                if (this.led) {
+                    this.led.stop().off();
+                }
             }
+
+            this.publishStateChange();
+
         }
-
-        this.publishStateChange();
+        catch (err) {
+            console.log("########### Error in Microcontroller Actor. For safty reasons TIN is shutting down ###########");
+            process.exit();
+        }
     }
 
     /**
      *
      */
     Led.prototype.blink = function () {
-        if (this.led) {
-            this.led.blink();
+
+        try {
+            if (this.led) {
+                this.led.blink();
+            }
+
+            this.state.light = "blink";
+
+            this.publishStateChange();
+
+        }
+        catch (err) {
+            console.log("########### Error in Microcontroller Actor. For safty reasons TIN is shutting down ###########");
+            process.exit();
         }
 
-        this.state.light = "blink";
 
-        this.publishStateChange();
     }
 };

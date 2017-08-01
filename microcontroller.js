@@ -130,7 +130,8 @@ function Microcontroller() {
                     var Raspi = require("raspi-io");
 
                     this.board = new five.Board({
-                        io: new Raspi()
+                        io: new Raspi(),
+                        repl: false //have set to false when j5 is running as subprocess. prevented issue with unhandled signal in systemd service
                     });
 
                     break;
@@ -158,6 +159,13 @@ function Microcontroller() {
 
                 deferred.reject(error);
             }.bind(this));
+
+            /*//TODO Needed?
+            this.board.on("error", function(error) {
+                this.logError(error);
+                process.exit(1);
+            }.bind(this));
+            */
         }
 
         return deferred.promise;
@@ -182,7 +190,11 @@ function Microcontroller() {
      */
 
     Microcontroller.prototype.stop = function () {
+
+
+        this.board.io.reset()
         //TODO implement after adding to firmata -> https://github.com/rwaldron/johnny-five/issues/617
+
     };
 
     /**

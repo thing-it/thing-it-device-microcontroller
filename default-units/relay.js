@@ -125,7 +125,7 @@ function Relay() {
             this.publishStateChange();
         }
         catch (err) {
-            console.log("########### Error in Microcontroller Actor. For safty reasons TIN is shutting down ###########");
+            this.logDebug("########### Error in Microcontroller Actor. For safty reasons TIN is shutting down ###########");
             process.exit();
         }
 
@@ -144,7 +144,7 @@ function Relay() {
             this.publishStateChange();
         }
         catch (err) {
-            console.log("########### Error in Microcontroller Actor. For safty reasons TIN is shutting down ###########");
+            this.logDebug("########### Error in Microcontroller Actor. For safty reasons TIN is shutting down ###########");
             process.exit();
         }
 
@@ -162,10 +162,10 @@ function Relay() {
             }
 
         } catch (err) {
-            console.log("########### Error in Microcontroller Actor. For safty reasons TIN is shutting down ###########");
+            this.logDebug("########### Error in Microcontroller Actor. For safty reasons TIN is shutting down ###########");
             process.exit();
         }
-    }
+    };
 
 
     /**

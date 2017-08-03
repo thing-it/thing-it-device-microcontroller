@@ -88,7 +88,6 @@ function Button() {
                     invert: this.configuration.inverted,
                     holdtime: this.configuration.holdtime
                 });
-                console.log("Button initialisiert!");
 
             } catch (error) {
                 this.device.node
@@ -105,21 +104,19 @@ function Button() {
 
         var self = this;
 
+        //TODO Maybe here is some kind of debouncing needed
 
         this.button.on("hold", function () {
-            console.log("Button Hold Event");
-            //self.publishEvent('hold');
-            self.change("hold", "0");
+            self.publishEvent('hold');
+
         });
 
         this.button.on("press", function () {
-            //self.publishEvent('press',"0");
-            //self.change("press");
+            self.publishEvent('press',"0");
         });
 
         this.button.on("release", function () {
-            //self.publishEvent('release');
-            //self.change("release","0");
+            self.publishEvent('release');
 
         });
 

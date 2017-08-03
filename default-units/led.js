@@ -118,7 +118,7 @@ function Led() {
             this.publishStateChange();
         }
         catch (err) {
-            console.log("########### Error in Microcontroller Actor. For safty reasons TIN is shutting down ###########");
+            this.logDebug("########### Error in Microcontroller Actor. For safty reasons TIN is shutting down ###########");
             process.exit();
         }
     };
@@ -139,7 +139,7 @@ function Led() {
             this.publishStateChange();
         }
         catch (err) {
-            console.log("########### Error in Microcontroller Actor. For safty reasons TIN is shutting down ###########");
+            this.logDebug("########### Error in Microcontroller Actor. For safty reasons TIN is shutting down ###########");
             process.exit();
         }
     };
@@ -154,7 +154,7 @@ function Led() {
                 this.state.light = "on";
 
                 if (this.led) {
-                    this.led.stop()
+                    this.led.stop();
                     this.led.on();
                 }
             } else {
@@ -169,10 +169,10 @@ function Led() {
 
         }
         catch (err) {
-            console.log("########### Error in Microcontroller Actor. For safty reasons TIN is shutting down ###########");
+            this.logDebug("########### Error in Microcontroller Actor. For safty reasons TIN is shutting down ###########");
             process.exit();
         }
-    }
+    };
 
     /**
      *
@@ -190,7 +190,7 @@ function Led() {
 
         }
         catch (err) {
-            console.log("########### Error in Microcontroller Actor. For safty reasons TIN is shutting down ###########");
+            this.logDebug("########### Error in Microcontroller Actor. For safty reasons TIN is shutting down ###########");
             process.exit();
         }
 

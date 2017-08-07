@@ -85,7 +85,7 @@ function Switch() {
 
             if (!self.state.switchState){
                 self.state.switchState = true;
-                self.publishValueChangeEvent(self.state.switchState);
+                self.publishValueChangeEvent({switchState : self.state.switchState});
             }
 
         });
@@ -95,7 +95,7 @@ function Switch() {
 
             if (self.state.switchState){
                 self.state.switchState = false;
-                self.publishValueChangeEvent(self.state.switchState);
+                self.publishValueChangeEvent({switchState : self.state.switchState});
             }
 
         });

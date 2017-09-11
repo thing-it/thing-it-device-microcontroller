@@ -104,7 +104,7 @@ function Relay() {
         this.state = state;
 
         if (this.relay) {
-            if (this.state.gate == true) {
+            if (this.state.gate === true) {
                 this.relay.open();
             } else {
                 this.relay.close();
@@ -126,7 +126,7 @@ function Relay() {
         }
         catch (err) {
             this.logDebug("########### Error in Microcontroller Actor. For safty reasons TIN is shutting down ###########");
-            process.exit();
+            //process.exit();
         }
 
     };
@@ -145,7 +145,7 @@ function Relay() {
         }
         catch (err) {
             this.logDebug("########### Error in Microcontroller Actor. For safty reasons TIN is shutting down ###########");
-            process.exit();
+            //process.exit();
         }
 
     };
@@ -163,7 +163,7 @@ function Relay() {
 
         } catch (err) {
             this.logDebug("########### Error in Microcontroller Actor. For safty reasons TIN is shutting down ###########");
-            process.exit();
+            //process.exit();
         }
     };
 

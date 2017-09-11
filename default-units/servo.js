@@ -12,6 +12,10 @@ module.exports = {
                 id: "position",
                 label: "Position",
                 type: "integer"
+            },{
+                id: "time",
+                label: "Time",
+                type: "integer"
             }]
         }, {
             id: "minimum",
@@ -113,6 +117,8 @@ function Servo() {
             }
         }
 
+
+
         self.publishStateChange();
 
         deferred.resolve();
@@ -143,8 +149,9 @@ function Servo() {
      */
     Servo.prototype.toPosition = function (parameters) {
         this.state.position = parameters.position;
+
         if (this.servo) {
-            this.servo.to(parameters.position);
+            this.servo.to(parameters.position, parameters.time);
         }
 
         this.publishStateChange();

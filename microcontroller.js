@@ -106,6 +106,7 @@ module.exports = {
 };
 
 var q = require('q');
+var {exec} = require('child_process');
 
 function Microcontroller() {
     /**
@@ -115,6 +116,8 @@ function Microcontroller() {
     Microcontroller.prototype.start = function () {
         var deferred = q.defer();
 
+        this.logLevel = 'debug';
+
         if (this.isSimulated()) {
             deferred.resolve();
         } else {
@@ -122,53 +125,102 @@ function Microcontroller() {
 
             this.logDebug(this.configuration);
 
-            switch (this.configuration.boardType) {
 
-                case "RASPBERRY":
-                    this.logDebug("Bind Microcontroller -> Raspberry Pi.");
+            var cleanUp = function () {
+                var promise = new Promise(function (resolve, reject) {
 
-                    var Raspi = require("raspi-io");
+                    switch (this.configuration.boardType) {
 
-                    this.board = new five.Board({
-                        io: new Raspi(),
-                        repl: false //have set to false when j5 is running as subprocess. prevented issue with unhandled signal in systemd service
-                    });
+                        case "RASPBERRY":
+                            this.logDebug("Clean Up -> Raspberry Pi.");
 
-                    break;
+                            exec('sudo rm -r /var/run/pigpio.pid', (err, stdout, stderr) => {
+                                if (err) {
+                                    this.logDebug(`No pgpio deamon to release : ${err}`);
+                                    resolve();
+                                    return;
+                                }
+                                this.logDebug(`pgpio deamon released:  ${stdout}`);
+                                resolve();
+                            });
+
+                            break;
+
+                        case "ARDUINO":
+                            this.logDebug("Clean Up-> Arduino");
+                            resolve();
+                            break;
+                    }
+                }.bind(this));
+
+                return promise;
+
+            }.bind(this);
 
 
-                case "ARDUINO":
-                    this.logDebug("Bind Microcontroller -> Arduino");
+            var bindBoard = function () {
+                var promise = new Promise(function (resolve, reject) {
 
-                    this.board = new five.Board();
+                    switch (this.configuration.boardType) {
 
-                    break;
-            }
+                        case "RASPBERRY":
+                            this.logDebug("Bind Microcontroller Board -> Raspberry Pi.");
+
+                            var Raspi = require("raspi-io");
+
+                            this.board = new five.Board({
+                                io: new Raspi(),
+                                repl: false //must set to false when j5 is running as subprocess. prevented issue with unhandled signal in systemd service
+                            });
+                            resolve();
+                            break;
+
+                        case "ARDUINO":
+                            this.logDebug("Bind Microcontroller Board -> Arduino");
+
+                            this.board = new five.Board();
+                            resolve();
+                            break;
+                    }
 
 
-            this.board.on("ready", function () {
-                this.logDebug("Microcontroller ready.");
+                }.bind(this));
+                return promise;
+            }.bind(this);
 
-                this.publishStateChange();
+            var addListener = function () {
+                var promise = new Promise(function (resolve, reject) {
 
-                deferred.resolve();
-            }.bind(this));
+                    this.board.on("ready", function () {
+                        this.logDebug("Microcontroller ready.");
 
-            this.board.on("fail", function (error) {
-                this.logError(error);
+                        this.publishStateChange();
 
-                deferred.reject(error);
-            }.bind(this));
+                        resolve(deferred.resolve());
 
-            /*//TODO Needed?
-            this.board.on("error", function(error) {
-                this.logError(error);
-                process.exit(1);
-            }.bind(this));
-            */
+                    }.bind(this));
+
+                    this.board.on("fail", function (error) {
+                        this.logError(error);
+
+                        reject(deferred.reject(error));
+
+                    }.bind(this));
+
+
+                }.bind(this));
+
+                return promise;
+            }.bind(this);
+
+
+
+            cleanUp().then(bindBoard).then(addListener);
+
+
         }
-
         return deferred.promise;
+
     };
 
 

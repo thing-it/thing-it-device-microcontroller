@@ -143,7 +143,6 @@ function Servo() {
      */
     Servo.prototype.toPosition = function (parameters) {
         this.state.position = parameters.position;
-
         if (this.servo) {
             this.servo.to(parameters.position);
         }

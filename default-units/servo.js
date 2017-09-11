@@ -100,7 +100,7 @@ function Servo() {
 
             try {
                 self.servo = new five.Servo({
-                    pin: 10,
+                    pin: self.configuration.pin,
                     range: [self.configuration.minimum,
                         self.configuration.maximum],
                     startAt: self.configuration.startAt

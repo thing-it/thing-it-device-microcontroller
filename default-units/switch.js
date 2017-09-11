@@ -79,26 +79,26 @@ function Switch() {
         }
 
 
-        var self = this;
+
 
         this.switch.on("open", function () {
 
-            if (!self.state.switchState){
-                self.state.switchState = true;
-                self.publishValueChangeEvent({switchState : self.state.switchState});
+            if (this.state.switchState){
+                this.state.switchState = true;
+                this.publishValueChangeEvent({switchState : this.state.switchState});
             }
 
-        });
+        }.bind(this));
 
 
         this.switch.on("close", function () {
 
-            if (self.state.switchState){
-                self.state.switchState = false;
-                self.publishValueChangeEvent({switchState : self.state.switchState});
+            if (this.state.switchState){
+                this.state.switchState = false;
+                this.publishValueChangeEvent({switchState : this.state.switchState});
             }
 
-        });
+        }.bind(this));
 
         return deferred.promise;
 

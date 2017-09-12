@@ -119,7 +119,7 @@ function Led() {
         }
         catch (err) {
             this.logDebug("########### Error in Microcontroller Actor. For safty reasons TIN is shutting down ###########");
-            process.exit();
+            //process.exit();
         }
     };
 
@@ -140,7 +140,7 @@ function Led() {
         }
         catch (err) {
             this.logDebug("########### Error in Microcontroller Actor. For safty reasons TIN is shutting down ###########");
-            process.exit();
+            //process.exit();
         }
     };
 
@@ -169,7 +169,7 @@ function Led() {
 
         }
         catch (err) {
-            this.logDebug("########### Error in Microcontroller Actor. For safty reasons TIN is shutting down ###########");
+            //this.logDebug("########### Error in Microcontroller Actor. For safty reasons TIN is shutting down ###########");
             process.exit();
         }
     };
@@ -191,7 +191,7 @@ function Led() {
         }
         catch (err) {
             this.logDebug("########### Error in Microcontroller Actor. For safty reasons TIN is shutting down ###########");
-            process.exit();
+            //process.exit();
         }
 
 

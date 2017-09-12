@@ -3,7 +3,11 @@
   "version": "0.3.2",
   "description": "[thing-it-node] Device Plugin for microcontroller functionality provided e.g. via an Arduino but also the GPIOs of a Raspberry Pi or C.H.I.P..",
   "authors": "Marc Gille, Julian Seibert",
-  "license": "MIT, EPL",
+  "license": "(MIT OR EPL)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/slotto/thing-it-device-browser"
+  },
   "keywords": [
     "IoT",
     "thing-it",

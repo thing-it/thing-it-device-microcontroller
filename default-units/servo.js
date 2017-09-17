@@ -11,11 +11,11 @@ module.exports = {
             parameters: [{
                 id: "position",
                 label: "Position",
-                type: "integer"
-            },{
+                type: {id: "integer"}
+            }, {
                 id: "time",
                 label: "Time",
-                type: "integer"
+                type: {id: "integer"}
             }]
         }, {
             id: "minimum",
@@ -113,10 +113,9 @@ function Servo() {
                 console.error("Cannot initialize Servo: " + error);
 
                 deferred.reject("Cannot initialize real Servo: "
-                + error);
+                    + error);
             }
         }
-
 
 
         self.publishStateChange();

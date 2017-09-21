@@ -21,13 +21,20 @@ After you have
 
 connect your microcontroller to your [thing-it] Node Box via a USB cable.
 
+
+####NOTE!
+The Node-Pixel Actor requires a custom version of the Arduino Firmata. Installation instructions can be found [here](https://github.com/ajfisher/node-pixel/blob/master/docs/installation.md).
+
+
 ## User Interface
 
 The appearance of the UI of the Microcontroller Plugin on the [thing-it] Mobile Client depends on the configured Actors and Sensors
 
 ### LED
 
-### RGB LED 
+### RGB LED
+
+### Addressable LED (WS2812B) 
 
 ### Button
 

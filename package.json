@@ -15,10 +15,11 @@
     "Uno"
   ],
   "dependencies": {
-    "johnny-five": "^0.10.13",
+    "johnny-five": "^0.11.6",
     "lodash": "^3.10.1",
     "q": "^1.4.1",
-    "serialport": "^4.0.7"
+    "serialport": "^4.0.7",
+    "node-pixel": "^0.9.3"
   },
   "devDependencies": {
     "thing-it-test": "0.0.13"

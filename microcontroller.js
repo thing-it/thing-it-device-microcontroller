@@ -178,7 +178,10 @@ function Microcontroller() {
                         case "ARDUINO":
                             this.logDebug("Bind Microcontroller Board -> Arduino");
 
-                            this.board = new five.Board();
+                            this.board = new five.Board({
+                                repl: false //must set to false when j5 is running as subprocess. prevented issue with unhandled signal in systemd service
+                            });
+
                             resolve();
                             break;
                     }
@@ -244,7 +247,7 @@ function Microcontroller() {
     Microcontroller.prototype.stop = function () {
 
 
-        this.board.io.reset()
+        //this.board.io.reset()
         //TODO implement after adding to firmata -> https://github.com/rwaldron/johnny-five/issues/617
 
     };

@@ -81,6 +81,19 @@ module.exports = {
             }
         }],
         configuration: [{
+            label: "Controller",
+            id: "controller",
+            type: {
+                family: "enumeration",
+                values: [{
+                    label: "DEFAULT",
+                    id: "DEFAULT"
+                }, {
+                    label: "PCA9685",
+                    id: "PCA9685"
+                }]
+            }
+        }, {
             label: "Pin (Red)",
             id: "pinRed",
             type: {
@@ -137,6 +150,7 @@ function RgbLed() {
                 var five = require("johnny-five");
 
                 self.led = new five.Led.RGB({
+                    controller: self.configuration.controller,
                     pins: {
                         red: self.configuration.pinRed,
                         green: self.configuration.pinGreen,
@@ -149,8 +163,8 @@ function RgbLed() {
 
                 self.device.node
                     .publishMessage("Cannot initialize "
-                    + self.device.id + "/" + self.id
-                    + ":" + x);
+                        + self.device.id + "/" + self.id
+                        + ":" + x);
             }
         }
 
@@ -192,6 +206,7 @@ function RgbLed() {
      */
     RgbLed.prototype.on = function () {
         if (this.led) {
+            this.led.stop().off();
             this.led.on();
         }
 

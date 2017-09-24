@@ -14,6 +14,16 @@ module.exports = {
         }, {
             id: "blink",
             label: "Blink"
+        },{
+            id: "brightness",
+            label: "Brightness",
+            parameters: [{
+                label: "Brightness",
+                id: "brightness",
+                type: {
+                    id: "integer"
+                }
+            }]
         }],
         state: [{
             id: "light",
@@ -30,7 +40,20 @@ module.exports = {
                 id: "digitalInOutPin"
             },
             defaultValue: "12"
-        }]
+        }, {
+            label: "Controller",
+            id: "controller",
+            type: {
+                family: "enumeration",
+                values: [{
+                    label: "DEFAULT",
+                    id: "DEFAULT"
+                }, {
+                    label: "PCA9685",
+                    id: "PCA9685"
+                }]
+            }
+        },]
     },
     create: function () {
         return new Led();
@@ -57,7 +80,10 @@ function Led() {
             try {
                 var five = require("johnny-five");
 
-                this.led = new five.Led(this.configuration.pin);
+                this.led = new five.Led({
+                    pin: this.configuration.pin,
+                    controller: this.configuration.controller
+                });
 
                 this.logDebug("LED initialized.");
 
@@ -169,8 +195,8 @@ function Led() {
 
         }
         catch (err) {
-            //this.logDebug("########### Error in Microcontroller Actor. For safty reasons TIN is shutting down ###########");
-            process.exit();
+            this.logDebug("########### Error in Microcontroller Actor. For safty reasons TIN is shutting down ###########");
+            //process.exit();
         }
     };
 
@@ -187,6 +213,28 @@ function Led() {
             this.state.light = "blink";
 
             this.publishStateChange();
+
+        }
+        catch (err) {
+            this.logDebug("########### Error in Microcontroller Actor. For safty reasons TIN is shutting down ###########");
+            //process.exit();
+        }
+
+
+    }
+    /**
+     *
+     */
+    Led.prototype.brightness = function (parameters) {
+
+        try {
+            if (this.led) {
+                this.led.brightness(parameters.brightness);
+            }
+
+            //this.state.light = "on";
+
+            //this.publishStateChange();
 
         }
         catch (err) {

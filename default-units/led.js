@@ -53,7 +53,7 @@ module.exports = {
                     id: "PCA9685"
                 }]
             }
-        },]
+        }]
     },
     create: function () {
         return new Led();

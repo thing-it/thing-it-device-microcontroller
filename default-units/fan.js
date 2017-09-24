@@ -72,7 +72,6 @@ function Fan() {
                     pin: this.configuration.pin,
                 });
 
-
                 this.logDebug("Fan initialized.");
 
                 deferred.resolve();
@@ -103,7 +102,8 @@ function Fan() {
      *
      */
     Fan.prototype.setState = function (state) {
-        this.state.speed = state.speed;
+
+       this.state =  Math.min(state.speed, 255);
 
         if (this.fan) {
             this.fan = this.state.speed;

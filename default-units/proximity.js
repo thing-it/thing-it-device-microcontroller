@@ -6,11 +6,8 @@ module.exports = {
         family: "proximity",
         deviceTypes: ["microcontroller/microcontroller"],
         events: [{
-            id: "objectInRange",
-            label: "Object in Range"
-        }, {
             id: "objectDetectionStarted",
-            label: "Object detection"
+            label: "Object detection started"
         }],
         services: [{
             id: "setThreshold",
@@ -41,14 +38,14 @@ module.exports = {
             label: "Check Range"
         }],
         state: [{
-            id: "distanceCM",
-            label: "Distance cm",
+            id: "objectInRange",
+            label: "Object in Range",
             type: {
-                id: "string"
+                id: "boolean"
             }
         }, {
-            id: "distanceINCH",
-            label: "Distance inch",
+            id: "distanceCM",
+            label: "Distance cm",
             type: {
                 id: "string"
             }
@@ -224,7 +221,18 @@ function Proximity() {
 
             if (this.state.tresholdCM > this.state.distanceCM - this.state.tolerance && this.state.tresholdCM + this.state.tolerance) {
 
-                this.publishEvent('objectInRange');
+                this.state.objectInRange = true;
+
+                this.publishValueChangeEvent({
+                    objectInRange: this.state.objectInRange
+                });
+
+            } else {
+                this.state.objectInRange = false;
+
+                this.publishValueChangeEvent({
+                    objectInRange: this.state.objectInRange
+                });
             }
         }
     };

@@ -6,6 +6,14 @@ module.exports = {
         family: "lights",
         deviceTypes: ["microcontroller/microcontroller"],
         services: [{
+            id: "setAllPixel",
+            label: "Set all Pixel",
+            parameters: [{
+                id: "hexColor",
+                label: "Hex Color",
+                type: {id: "string"}
+            }]
+        }, {
             id: "setPixel",
             label: "Set Pixel",
             parameters: [{
@@ -24,7 +32,7 @@ module.exports = {
                 id: "blue",
                 label: "Blue",
                 type: {id: "integer"}
-            }]
+            },]
         }, {
             id: "loading",
             label: "Loading",
@@ -223,6 +231,19 @@ function Pixel() {
     Pixel.prototype.setPixel = function (parameters) {
 
         this.strip.pixel(parameters.position).color(rgbToHex(parameters.red, parameters.green, parameters.blue));
+
+        this.showPixel();
+
+    };
+
+    /**
+     *
+     */
+    Pixel.prototype.setAllPixel = function (parameters) {
+
+        for (var i = 0; i< this.configuration.number; i++){
+            this.strip.pixel(i).color(parameters.hexColor);
+        }
 
         this.showPixel();
 

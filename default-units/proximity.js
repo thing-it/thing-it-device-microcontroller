@@ -8,13 +8,37 @@ module.exports = {
         events: [{
             id: "objectInRange",
             label: "Object in Range"
+        }, {
+            id: "objectDetectionStarted",
+            label: "Object detection"
         }],
         services: [{
             id: "setThreshold",
-            label: "Set Threshold"
+            label: "Set Threshold",
+            parameters: [{
+                label: "Distance",
+                id: "distance",
+                type: {
+                    id: "string"
+                }
+            }, {
+                label: "Time in Seconds",
+                id: "time",
+                type: {
+                    id: "integer"
+                }
+
+            }, {
+                label: "Tolerance in cm",
+                id: "tolerance",
+                type: {
+                    id: "integer"
+                }
+
+            }]
         }, {
             id: "checkRange",
-            label: "checkRange"
+            label: "Check Range"
         }],
         state: [{
             id: "distanceCM",
@@ -33,6 +57,18 @@ module.exports = {
             label: "Threshold cm",
             type: {
                 id: "string"
+            }
+        }, {
+            id: "thresholdTime",
+            label: "Threshold Time",
+            type: {
+                id: "integer"
+            }
+        }, {
+            id: "tolerance",
+            label: "Tolerance in cm",
+            type: {
+                id: "integer"
             }
         }],
         configuration: [{
@@ -70,19 +106,23 @@ function Proximity() {
     Proximity.prototype.start = function () {
         var deferred = q.defer();
 
+        this.logLevel = 'debug';
+
 
         if (!this.isSimulated()) {
             try {
                 var five = require("johnny-five");
 
                 this.proximity = new five.Proximity({
-                    controller: this.configuration.controller,
-                    freq: this.configuration.frequenz
+                    controller: "SRF10",
+                    freq: 1000,
                 });
 
                 deferred.resolve();
 
             } catch (error) {
+                console.log("initialize Error of proximity");
+
                 this.device.node
                     .publishMessage("Cannot initialize "
                         + this.device.id + "/" + this.id
@@ -90,23 +130,55 @@ function Proximity() {
 
                 deferred.reject(error);
             }
-        }
-        else {
+
+
+            var sensorChanged = false;
+            var firstDetection = false;
+            var values = [];
+
+            var self = this;
+
+            this.proximity.on("data", function () {
+
+                if (sensorChanged) {
+
+                    if (firstDetection) {
+                        self.publishEvent('objectDetectionStarted');
+                        values = [];
+                        firstDetection = false;
+                    }
+
+                    values.push(this.cm);
+
+                    if (values.length === self.state.tresholdTime) {
+
+                        var sum = values.reduce(function (a, b) {
+                            return a + b;
+                        });
+
+                        self.state.distanceCM = sum / values.length;
+                        self.checkRange();
+
+                        sensorChanged = false;
+
+                    }
+                }
+
+            });
+
+
+            this.proximity.on("change", function () {
+
+                sensorChanged = true;
+                firstDetection = true;
+                console.log("Proximity change cm: ", this.cm);
+
+            });
+
+
+        } else {
             deferred.resolve();
         }
-
-
-        this.proximity.on("change", function () {
-            //this.logDebug("Proximity change inches: ", this.proximity.on.inches);
-            this.logDebug("Proximity change cm: ", this.proximity.on.cm);
-
-            this.state.distanceCM = this.proximity.on.cm;
-
-            this.checkRange();
-
-
-        }.bind(this));
-
 
         return deferred.promise;
     };
@@ -128,12 +200,19 @@ function Proximity() {
     /**
      *
      */
-    Proximity.prototype.setTreshold = function () {
+    Proximity.prototype.setTreshold = function (parameters) {
 
         if (this.proximity) {
-            this.state.tresholdCM = this.state.distanceCM;
+            this.state.tresholdCM = parameters.distance;
+            this.state.tresholdTime = parameters.time;
+            this.state.tolerance = parameters.tolerance;
         }
-        this.publishValueChangeEvent({tresholdCM: this.state.tresholdCM});
+
+        this.publishValueChangeEvent({
+            tresholdCM: this.state.tresholdCM,
+            tresholdTime: this.state.tresholdTime,
+            tolerance: this.state.tolerance
+        });
     };
 
     /**
@@ -143,7 +222,8 @@ function Proximity() {
 
         if (this.proximity && this.state.tresholdCM) {
 
-            if (this.state.tresholdCM > this.state.distanceCM) {
+            if (this.state.tresholdCM > this.state.distanceCM - this.state.tolerance && this.state.tresholdCM + this.state.tolerance) {
+
                 this.publishEvent('objectInRange');
             }
         }
@@ -152,16 +232,7 @@ function Proximity() {
     /**
      *
      */
-    Proximity.prototype.close = function () {
-
-
-    };
-
-
-    /**
-     *
-     */
     Proximity.prototype.stop = function () {
         this.proximity = null;
-    }
-};
+    };
+}

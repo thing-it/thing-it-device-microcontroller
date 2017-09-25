@@ -122,8 +122,6 @@ function Pixel() {
                     this.off();
 
                     deferred.resolve();
-
-
                 }.bind(this));
 
                 console.log("Pixel initialized.");

@@ -84,6 +84,24 @@ module.exports = {
             type: {
                 id: "integer"
             }
+        }, {
+            id: "tresholdCM",
+            label: "Treshold in cm",
+            type: {
+                id: "integer"
+            }
+        }, {
+            id: "tresholdTime",
+            label: "Treshold time in seconds",
+            type: {
+                id: "integer"
+            }
+        }, {
+            id: "tolerance",
+            label: "Tolerance in cm",
+            type: {
+                id: "integer"
+            }
         }]
     },
     create: function () {
@@ -114,6 +132,10 @@ function Proximity() {
                     controller: "SRF10",
                     freq: 1000,
                 });
+
+                this.state.tresholdCM = this.configuration.tresholdCM;
+                this.state.tresholdTime = this.configuration.tresholdTime;
+                this.state.tolerance = this.configuration.tolerance;
 
                 deferred.resolve();
 

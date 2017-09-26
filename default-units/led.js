@@ -53,6 +53,12 @@ module.exports = {
                     id: "PCA9685"
                 }]
             }
+        }, {
+            id: "inverted",
+            label: "Inverted",
+            type: {
+                id: "boolean"
+            }
         }]
     },
     create: function () {
@@ -82,7 +88,8 @@ function Led() {
 
                 this.led = new five.Led({
                     pin: this.configuration.pin,
-                    controller: this.configuration.controller
+                    controller: this.configuration.controller,
+                    isAnode: this.configuration.inverted
                 });
 
                 this.logDebug("LED initialized.");

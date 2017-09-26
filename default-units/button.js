@@ -84,7 +84,7 @@ function Button() {
                 this.button = new five.Button({
                     pin: this.configuration.pin,
                     isPullup: this.configuration.pullup,
-                    isPulldown: this.configuration.pulldown,
+                    isPulldown: this.configuration.pulldown, //TODO Invert
                     invert: this.configuration.inverted,
                     holdtime: this.configuration.holdtime
                 });

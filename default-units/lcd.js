@@ -147,7 +147,7 @@ function Lcd() {
     /**
      *
      */
-    Lcd.prototype.start = function (app, io) {
+    Lcd.prototype.start = function () {
         var deferred = q.defer();
 
         if (!this.configuration.rows) {
@@ -159,11 +159,11 @@ function Lcd() {
         }
 
         this.state = {
-            text: null,
-            column: 0,
-            row: 0,
-            backlit: 100
-        }
+             text: '',
+             column: 0,
+             row: 0,
+             backlit: 100
+         };
 
         if (!this.isSimulated()) {
             try {
@@ -175,7 +175,11 @@ function Lcd() {
                         this.configuration.db4Pin,
                         this.configuration.db5Pin,
                         this.configuration.db6Pin,
-                        this.configuration.db7Pin]
+                        this.configuration.db7Pin],
+                    rows: this.configuration.rows,
+                    cols: this.configuration.columns
+
+
                     // Options:
                     // bitMode: 4 or 8, defaults to 4
                     // lines: number of lines, defaults to 2
@@ -218,6 +222,7 @@ function Lcd() {
         if (this.lcd) {
             this.lcd.cursor(this.state.row, this.state.column);
             this.lcd.print(this.state.text);
+            //TODO Backlit
         }
     };
 
@@ -225,7 +230,7 @@ function Lcd() {
      *
      */
     Lcd.prototype.clear = function () {
-        this.state.text = '                                ';
+        //this.state.text = '                                ';
         this.state.row = 0;
         this.state.column = 0;
         this.state.backlit = 0;
@@ -245,28 +250,31 @@ function Lcd() {
             return;
         }
 
+        this.state.text = '';
+
         // In case a number was submitted
 
         parameters.text = new String(parameters.text);
 
-        var index = 16 * this.state.row + this.state.column;
+        // var index = 16 * this.state.row + this.state.column;
+        //
+        // this.state.text = this.state.text.substr(0, index) + parameters.text + this.state.text.substr(index + parameters.text.length + 1);
+        // this.state.text = this.state.text.substr(0, 32);
+        // this.state.row = index + parameters.text.length / 16;
+        // this.state.column = index + parameters.text.length % 16;
+        //
+        // // Reset in case of overflow
+        //
+        // if (this.state.row > this.configuration.row) {
+        //     this.state.row = 0;
+        //     this.state.column = 0;
+        // }
 
-        this.state.text = this.state.text.substr(0, index) + parameters.text + this.state.text.substr(index + parameters.text.length + 1);
-        this.state.text = this.state.text.substr(0, 32);
-        this.state.row = index + parameters.text.length / 16;
-        this.state.column = index + parameters.text.length % 16;
-
-        // Reset in case of overflow
-
-        if (this.state.row > 1) {
-            this.state.row = 0;
-            this.state.column = 0;
-        }
 
         if (this.lcd) {
             // TODO
 
-            this.lcd.print();
+            this.lcd.print(parameters.text);
         }
 
         this.publishStateChange();

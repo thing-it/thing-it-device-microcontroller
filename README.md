@@ -23,7 +23,7 @@ connect your microcontroller to your [thing-it] Node Box via a USB cable.
 
 
 ####NOTE!
-The Node-Pixel Actor requires a custom version of the Arduino Firmata. Installation instructions can be found [here](https://github.com/ajfisher/node-pixel/blob/master/docs/installation.md).
+The Node-Pixel Actor only works with Arduino as Microcontroller and requires a custom version of the Arduino Firmata. Installation instructions can be found [here](https://github.com/ajfisher/node-pixel/blob/master/docs/installation.md).
 
 
 ## User Interface

@@ -36,23 +36,6 @@ module.exports = {
         }, {
             id: "loading",
             label: "Loading",
-            parameters: [{
-                id: "speed",
-                label: "Speed",
-                type: {id: "integer"}
-            }, {
-                id: "red",
-                label: "Red",
-                type: {id: "integer"}
-            }, {
-                id: "green",
-                label: "Green",
-                type: {id: "integer"}
-            }, {
-                id: "blue",
-                label: "Blue",
-                type: {id: "integer"}
-            }]
         }],
         state: [{
             id: "light",
@@ -241,7 +224,7 @@ function Pixel() {
      */
     Pixel.prototype.setAllPixel = function (parameters) {
 
-        for (var i = 0; i< this.configuration.number; i++){
+        for (var i = 0; i < this.configuration.number; i++) {
             this.strip.pixel(i).color(parameters.hexColor);
         }
 

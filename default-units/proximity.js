@@ -47,13 +47,13 @@ module.exports = {
             id: "distanceCM",
             label: "Distance cm",
             type: {
-                id: "string"
+                id: "integer"
             }
         }, {
             id: "thresholdCM",
             label: "Threshold cm",
             type: {
-                id: "string"
+                id: "integer"
             }
         }, {
             id: "thresholdTime",
@@ -79,7 +79,7 @@ module.exports = {
                 }]
             }
         }, {
-            id: "frequenz",
+            id: "frequenz", //TODO Unused....
             label: "Frequenz",
             type: {
                 id: "integer"
@@ -123,6 +123,18 @@ function Proximity() {
 
         this.logLevel = 'debug';
 
+        //this.state.distanceCM = 0;
+        //this.state.tresholdCM = 0;
+
+
+        this.state = {
+            objectInRange: false,
+            distanceCM: 0,
+            thresholdCM: 0,
+            thresholdTime: 0,
+            tolerance: 0
+        };
+
 
         if (!this.isSimulated()) {
             try {
@@ -159,17 +171,24 @@ function Proximity() {
 
             this.proximity.on("data", function () {
 
+                console.log("Proximity on cm: ", this.cm);
+
                 if (sensorChanged) {
 
+                    console.log("Sensor changed");
                     if (firstDetection) {
+                        console.log("object gefunden");
                         self.publishEvent('objectDetectionStarted');
+
+
+
                         values = [];
                         firstDetection = false;
                     }
 
                     values.push(this.cm);
 
-                    if (values.length === self.state.tresholdTime) {
+                    if (values.length === 10) {
 
                         var sum = values.reduce(function (a, b) {
                             return a + b;
@@ -177,7 +196,7 @@ function Proximity() {
 
                         self.state.distanceCM = sum / values.length;
                         self.checkRange();
-
+                        self.publishStateChange();
                         sensorChanged = false;
 
                     }
@@ -220,7 +239,7 @@ function Proximity() {
      *
      */
     Proximity.prototype.setTreshold = function (parameters) {
-
+        console.log("Service Call #######")
         if (this.proximity) {
             this.state.tresholdCM = parameters.distance;
             this.state.tresholdTime = parameters.time;
@@ -238,22 +257,24 @@ function Proximity() {
      *
      */
     Proximity.prototype.checkRange = function () {
-
+        console.log("check range");
         if (this.proximity && this.state.tresholdCM) {
 
             if (this.state.tresholdCM > this.state.distanceCM - this.state.tolerance && this.state.tresholdCM + this.state.tolerance) {
 
                 this.state.objectInRange = true;
+                console.log("event");
 
                 this.publishValueChangeEvent({
-                    objectInRange: this.state.objectInRange
+                    objectInRange: true
+
                 });
 
             } else {
                 this.state.objectInRange = false;
 
                 this.publishValueChangeEvent({
-                    objectInRange: this.state.objectInRange
+                    objectInRange: false
                 });
             }
         }

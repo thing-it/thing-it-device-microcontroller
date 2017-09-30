@@ -1,0 +1,33 @@
+<div class="flexLayout flexDirectionColumn flexJustifyCenter flexAlignCenter">
+    <div class="flexLayout flexAlignCenter flexJustifyCenter flexGrow1">
+        <div class="flexGrow1 marginRight0_5">
+            <span ng-if="component._state.coolActive" class="lightPrimaryColor"><i
+                    class="fa fa-thermometer-full"></i></span>
+        </div>
+        <div class="circleButton marginLeft0_5" style="display: inline-block;"
+             ng-click="panel.callActorService(component, 'decrementSetpoint')">
+            <i class="icon sl-minus-1"></i>
+        </div>
+        <div class="flexLayout flexDirectionColumn flexJustifyCenter flexAlignCenter marginLeft0_5">
+            <div class="flexGrow1">
+                <span class="lightPrimaryColor" style="font-size: 4em;">{{component._state.setpoint | number:1}}</span>
+                <span class="smallFont lightPrimaryColor">&deg;C</span>
+            </div>
+            <div class="marginLeft0_5 flexGrow1">
+                <span class="smallFont lightPrimaryColor">{{component._state.temperature | number:1}} &deg;C</span>
+            </div>
+            <div class="marginLeft0_5 flexGrow1">
+                <span ng-if="component._state.heatActive" class="lightPrimaryColor">
+                    <i class="fa fa-fire"></i>
+                </span>
+                <span ng-if="component._state.coolActive" class="lightPrimaryColor">
+                    <i class="fa fa-snowflake-o"></i>
+                </span>
+            </div>
+        </div>
+        <div class="circleButton marginLeft0_5" style="display: inline-block;"
+             ng-click="panel.callActorService(component, 'incrementSetpoint')">
+            <i class="icon sl-add-1"></i>
+        </div>
+    </div>
+</div>

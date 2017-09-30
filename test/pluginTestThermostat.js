@@ -37,10 +37,10 @@ describe('[thing-it] BACnet Device', function () {
                             assert.notEqual(initialState.mode, undefined, 'mode undefined');
                             done();
                         } catch (err) {
-                            console.log('ERROR DEBUG pluginTestThermostat: Initial state after 5s.', initialState);
+                            console.log('ERROR DEBUG pluginTestThermostat: Initial state after 2s.', initialState);
                             done(err);
                         }
-                    }, 4000);
+                    }, 2000);
                 });
         });
 
@@ -69,9 +69,6 @@ describe('[thing-it] BACnet Device', function () {
 
             it('should decrease the setpoint modification and the setpoint by 2',
                 function (done) {
-                    console.log('**************');
-                    console.log(lastState);
-                    console.log('**************');
                     var desiredState = JSON.parse(JSON.stringify(lastState));
                     desiredState.setpoint -= 2;
 
@@ -84,6 +81,123 @@ describe('[thing-it] BACnet Device', function () {
                         .then(function () {
                             var resultingState = testDriver.microcontroller.thermostat.getState();
                             assert.equal(resultingState.setpoint, desiredState.setpoint);
+                            lastState = resultingState;
+                            done();
+                        })
+                        .fail(function (error) {
+                            done(error);
+                        });
+                });
+        });
+
+        describe('#decrementSetpoint 10x to get to cooling mode', function () {
+            this.timeout(5000);
+
+            it('should set mode to COOL',
+                function (done) {
+                    var desiredState = JSON.parse(JSON.stringify(lastState));
+                    desiredState.mode = 'COOL';
+
+                    testDriver.microcontroller.thermostat.decrementSetpoint()
+                        .delay(200)
+                        .then(function () {
+                            return testDriver.microcontroller.thermostat.decrementSetpoint();
+                        })
+                        .delay(200)
+                        .then(function () {
+                            return testDriver.microcontroller.thermostat.decrementSetpoint();
+                        })
+                        .delay(200)
+                        .then(function () {
+                            return testDriver.microcontroller.thermostat.decrementSetpoint();
+                        })
+                        .delay(200)
+                        .then(function () {
+                            return testDriver.microcontroller.thermostat.decrementSetpoint();
+                        })
+                        .delay(200)
+                        .then(function () {
+                            return testDriver.microcontroller.thermostat.decrementSetpoint();
+                        })
+                        .delay(200)
+                        .then(function () {
+                            return testDriver.microcontroller.thermostat.decrementSetpoint();
+                        })
+                        .delay(200)
+                        .then(function () {
+                            return testDriver.microcontroller.thermostat.decrementSetpoint();
+                        })
+                        .delay(200)
+                        .then(function () {
+                            return testDriver.microcontroller.thermostat.decrementSetpoint();
+                        })
+                        .delay(200)
+                        .then(function () {
+                            return testDriver.microcontroller.thermostat.decrementSetpoint();
+                        })
+                        .delay(200)
+                        .then(function () {
+                            var resultingState = testDriver.microcontroller.thermostat.getState();
+                            assert.equal(resultingState.mode, desiredState.mode);
+                            lastState = resultingState;
+                            done();
+                        })
+                        .fail(function (error) {
+                            done(error);
+                        });
+                });
+        });
+
+
+        describe('#incrementSetpoint 10x to get to cooling mode', function () {
+            this.timeout(5000);
+
+            it('should set mode to HEAT',
+                function (done) {
+                    var desiredState = JSON.parse(JSON.stringify(lastState));
+                    desiredState.mode = 'HEAT';
+
+                    testDriver.microcontroller.thermostat.incrementSetpoint()
+                        .delay(200)
+                        .then(function () {
+                            return testDriver.microcontroller.thermostat.incrementSetpoint();
+                        })
+                        .delay(200)
+                        .then(function () {
+                            return testDriver.microcontroller.thermostat.incrementSetpoint();
+                        })
+                        .delay(200)
+                        .then(function () {
+                            return testDriver.microcontroller.thermostat.incrementSetpoint();
+                        })
+                        .delay(200)
+                        .then(function () {
+                            return testDriver.microcontroller.thermostat.incrementSetpoint();
+                        })
+                        .delay(200)
+                        .then(function () {
+                            return testDriver.microcontroller.thermostat.incrementSetpoint();
+                        })
+                        .delay(200)
+                        .then(function () {
+                            return testDriver.microcontroller.thermostat.incrementSetpoint();
+                        })
+                        .delay(200)
+                        .then(function () {
+                            return testDriver.microcontroller.thermostat.incrementSetpoint();
+                        })
+                        .delay(200)
+                        .then(function () {
+                            return testDriver.microcontroller.thermostat.incrementSetpoint();
+                        })
+                        .delay(200)
+                        .then(function () {
+                            return testDriver.microcontroller.thermostat.incrementSetpoint();
+                        })
+                        .delay(200)
+                        .then(function () {
+                            var resultingState = testDriver.microcontroller.thermostat.getState();
+                            assert.equal(resultingState.mode, desiredState.mode);
                             lastState = resultingState;
                             done();
                         })
@@ -113,7 +227,7 @@ describe('[thing-it] BACnet Device', function () {
                         });
                 });
         });
-    })
+    });
 
 
     after(function () {

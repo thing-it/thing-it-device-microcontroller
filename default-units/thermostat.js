@@ -273,7 +273,7 @@ function Thermostat() {
      *
      */
     Thermostat.prototype.determineMode = function () {
-        this.logDebug('Determining mode.', this.state.setpoint, this.state.temperature)
+        this.logDebug('Determining mode.', this.state.setpoint, this.state.temperature);
         var promise;
         var delta = this.state.setpoint - this.state.temperature;
 
@@ -283,7 +283,7 @@ function Thermostat() {
                 this.state.coolActive = false;
                 promise = this.setMode('HEAT');
             } else {
-                this.state.heatActive = fale;
+                this.state.heatActive = false;
                 this.state.coolActive = true;
                 promise = this.setMode('COOL');
             }

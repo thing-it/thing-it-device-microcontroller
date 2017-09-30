@@ -14,6 +14,7 @@ describe('[thing-it] BACnet Device', function () {
         testDriver.registerUnitPlugin(__dirname + "/../default-units/thermostat");
         testDriver.start({
             configuration: require("../examples/configurationThermostat.js"),
+            // TODO Julian - remove the next line to test in non-simulated mode
             simulated: true,
             heartbeat: 10
         });
@@ -28,9 +29,6 @@ describe('[thing-it] BACnet Device', function () {
                 function (done) {
                     setTimeout(function () {
                         var currentState = testDriver.microcontroller.thermostat.getState();
-                        console.log('***');
-                        console.log(currentState);
-                        console.log('***');
                         initialState = JSON.parse(JSON.stringify(currentState));
 
                         try {
@@ -54,6 +52,7 @@ describe('[thing-it] BACnet Device', function () {
 
                     testDriver.microcontroller.thermostat.incrementSetpoint()
                         .then(function () {
+                            console.log('Setpoing increase called.');
                             var resultingState = testDriver.microcontroller.thermostat.getState();
                             lastState = resultingState;
                             assert.equal(resultingState.setpoint, desiredState.setpoint);

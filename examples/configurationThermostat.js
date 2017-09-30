@@ -2,7 +2,6 @@ module.exports = {
     "label": "Default",
     "id": "default",
     "autoDiscoveryDeviceTypes": [],
-    "simulated":"true",
     "devices": [{
         "id": "microcontroller",
         "label": "GPIO Microcontroller",

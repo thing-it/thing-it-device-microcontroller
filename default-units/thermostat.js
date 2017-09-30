@@ -100,7 +100,9 @@ function Thermostat() {
             this.logDebug("Starting in non-simulated mode");
         }
 
-        return this.update();
+        this.update();
+
+        return q();
     };
 
     /**
@@ -165,6 +167,7 @@ function Thermostat() {
      */
     Thermostat.prototype.update = function () {
         this.logDebug('Updating values.');
+
         var promise = this.getTemperatureFromSensor()
             .then(function () {
                 this.logDebug('Got temperature.');
@@ -174,7 +177,7 @@ function Thermostat() {
                 this.publishStateChange();
                 this.logDebug('Values updated.');
             }.bind(this))
-            .fail(function (error){
+            .catch(function (error){
                 this.logError(error);
                 return q();
             }.bind(this));
@@ -238,6 +241,7 @@ function Thermostat() {
      */
     Thermostat.prototype.getTemperatureFromSensor = function () {
         var deferred = q.defer();
+        var promise;
 
         if (this.isSimulated()) {
             switch (this.state.mode) {
@@ -254,15 +258,14 @@ function Thermostat() {
                     this.state.temperature = 20;
             }
 
-            deferred.resolve;
+            promise = q(this.state.temperature);
         } else {
-            this.state.temperature = 20; // TODO Julian - implement actual sensor update call instead
-            deferred.resolve;
+            promise = deferred.promise;
+            this.state.temperature = 20; // TODO Julian - implement actual sensor update call instead and make sure to resolve or reject deferred
         }
 
         this.logDebug('Temperature retrieved.', this.state.temperature);
-        this.logDebug(deferred.promise);
-        return deferred.promise;
+        return promise;
     };
 
 
@@ -328,16 +331,17 @@ function Thermostat() {
      */
     Thermostat.prototype.updateLEDs = function (color) {
         this.logDebug('Setting LED color.', color);
+        var promise;
         var deferred = q.defer();
 
         if (this.isSimulated()) {
-            deferred.resolve;
+            promise = q();
         } else {
-            // TODO Julian - implement actual LED update call
-            deferred.resolve;
+            // TODO Julian - implement actual LED update call, make sure to resolve or reject 'deferred'.
+            promise = deferred.promise;
         }
 
-        return deferred.promise;
+        return promise;
     };
 
 
@@ -346,15 +350,16 @@ function Thermostat() {
      */
     Thermostat.prototype.updateDisplay = function () {
         this.logDebug('Setting display.', this.state.temperature, this.state.setpoint);
+        var promise;
         var deferred = q.defer();
 
         if (this.isSimulated()) {
-            deferred.resolve;
+            promise = q();
         } else {
-            // TODO Julian - implement actual Display update call
-            deferred.resolve;
+            // TODO Julian - implement actual Display update call, make sure to resolve or reject 'deferred'.
+            promise = deferred.promise;
         }
 
-        return deferred.promise;
+        return promise;
     };
 }

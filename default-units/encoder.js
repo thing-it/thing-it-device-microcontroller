@@ -15,12 +15,21 @@ module.exports = {
             }, {
                 id: "pressed",
                 label: "Pressed"
-            }, {
-                id: "released",
-                label: "Released"
             }
         ],
-        state: [],
+        state: [{
+            id: "value",
+            label: "Value",
+            type: {
+                id: "integer"
+            }, defaultValue: "125"
+        }, {
+            id: "switch",
+            label: "Switch",
+            type: {
+                id: "boolean"
+            }, defaultValue: false
+        }],
         configuration: [{
             label: "Pin",
             id: "pin",
@@ -30,13 +39,6 @@ module.exports = {
             },
             defaultValue: "12"
         }, {
-            label: "Inverted",
-            id: "inverted",
-            type: {
-                id: "boolean"
-            },
-            defaultValue: false
-        }, {
             label: "Pullup",
             id: "pullup",
             type: {
@@ -44,23 +46,16 @@ module.exports = {
             },
             defaultValue: false
         }, {
-            label: "Pulldown",
-            id: "pulldown",
-            type: {
-                id: "boolean"
-            },
-            defaultValue: false
-        }, {
-            label: "Holdtime",
-            id: "holdtime",
-            type: {
+            label: "Step size",
+            id: "stepSize",
+            typ: {
                 id: "integer"
             },
-            defaultValue: "500"
+            defaultValue: 1,
         }]
     },
     create: function () {
-        return new Button();
+        return new Encoder();
     }
 };
 
@@ -69,30 +64,104 @@ var q = require('q');
 /**
  *
  */
-function Button() {
+function Encoder() {
     /**
      *
      */
-    Button.prototype.start = function () {
+    Encoder.prototype.start = function () {
 
         var deferred = q.defer();
 
-        this.state = {};
+
+        this.state = {
+            value: 0
+        };
+
+        this.configuration.stepSize = 5;
 
         if (!this.isSimulated()) {
             try {
 
                 var five = require("johnny-five");
 
-                this.button = new five.Button({
-                    pin: this.configuration.pin,
-                    isPullup: this.configuration.pullup,
-                    isPulldown: this.configuration.pulldown, //TODO Invert
-                    invert: this.configuration.inverted,
-                    holdtime: this.configuration.holdtime
+
+                //TODO Make this configurable.
+
+                var upButton = new five.Button({
+                    pin: 2,
+                    isPullup: true,
                 });
 
-            } catch (error) {
+                var downButton = new five.Button({
+                    pin: 17,
+                    type: "digital",
+                    isPullup: true,
+                });
+
+                var pressButton = new five.Button({
+                    pin: 16,
+                    type: "digital",
+                    isPullup: true,
+                });
+
+
+                var waveform = '';
+                var waveformTimeout;
+
+                upButton.on('up', function () {
+                    waveform += '1';
+                    handleWaveform();
+                });
+
+                downButton.on('up', function () {
+                    waveform += '0';
+                    handleWaveform();
+                });
+
+                pressButton.on('down', function () {
+                    this.state.switch = !this.state.switch;
+                    console.log(this.state.switch);
+                }.bind(this));
+
+                var self = this;
+
+                function handleWaveform() {
+                    if (waveform.length < 2) {
+                        waveformTimeout = setTimeout(function () {
+                            waveform = '';
+                        }, 8);
+                        return;
+                    }
+
+                    if (waveformTimeout) {
+                        clearTimeout(waveformTimeout);
+                    }
+
+                    if (waveform === '01') {
+
+                        self.state.value = Math.min(self.state.value + self.configuration.stepSize, 255);
+                        console.log(self.state.value);
+                        this.publishStateChange();
+
+                    } else if (waveform === '10') {
+
+
+                        self.state.value = self.state.value - self.configuration.stepSize;
+
+                        if (self.state.value < 0) {
+                            self.state.value = 0;
+                        }
+                        console.log(self.state.value);
+                    }
+
+                    waveform = '';
+                };
+
+
+                deferred.resolve();
+
+            } catch
+                (error) {
                 this.device.node
                     .publishMessage("Cannot initialize " +
                         this.device.id + "/" + this.id +
@@ -100,28 +169,10 @@ function Button() {
 
                 deferred.reject(error);
             }
-        } else {
+        }
+        else {
             deferred.resolve();
         }
-
-
-        var self = this;
-
-        //TODO Maybe here is some kind of debouncing needed
-
-        this.button.on("hold", function () {
-            self.publishEvent('hold');
-
-        });
-
-        this.button.on("press", function () {
-            self.publishEvent('press',"0");
-        });
-
-        this.button.on("release", function () {
-            self.publishEvent('release');
-
-        });
 
         return deferred.promise;
 
@@ -129,7 +180,7 @@ function Button() {
     };
 
 
-    Button.prototype.getState = function () {
+    Encoder.prototype.getState = function () {
         return this.state;
     };
 }

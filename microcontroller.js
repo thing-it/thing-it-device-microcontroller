@@ -50,6 +50,12 @@ module.exports = {
                 }, {
                     id: "13",
                     label: "13"
+                }, {
+                    id: "14",
+                    label: "14"
+                }, {
+                    id: "15",
+                    label: "15"
                 }]
             },
             analogInPin: {

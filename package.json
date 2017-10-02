@@ -6,7 +6,7 @@
   "license": "(MIT OR EPL)",
   "repository": {
     "type": "git",
-    "url": "https://github.com/slotto/thing-it-device-browser"
+    "url": "https://github.com/marcgille/thing-it-device-microcontroller"
   },
   "keywords": [
     "IoT",
@@ -19,8 +19,7 @@
     "lodash": "^3.10.1",
     "q": "^1.4.1",
     "serialport": "^4.0.7",
-    "node-pixel": "^0.9.3",
-    "johnny-five-rotary-encoder": "^1.0.1"
+    "node-pixel": "^0.9.3"
   },
   "devDependencies": {
     "thing-it-test": "0.0.13"

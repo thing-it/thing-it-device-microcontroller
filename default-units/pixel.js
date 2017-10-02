@@ -36,6 +36,15 @@ module.exports = {
         }, {
             id: "loading",
             label: "Loading",
+            parameters: [{
+                id: "speed",
+                label: "Speed",
+                type: {id: "integer"}
+            }, {
+                id: "hexColor",
+                label: "Hex Color",
+                type: {id: "string"}
+            }]
         }],
         state: [{
             id: "light",
@@ -177,11 +186,15 @@ function Pixel() {
      */
     Pixel.prototype.loading = function (parameters) {
         var pixel = require("node-pixel");
+
         this.off();
 
-        this.strip.pixel(0).color(rgbToHex(parseInt(parameters.red * 0.3), parseInt(parameters.green * 0.3), parseInt(parameters.blue * 0.3)));
-        this.strip.pixel(1).color(rgbToHex(parseInt(parameters.red * 0.5), parseInt(parameters.green * 0.5), parseInt(parameters.blue * 0.5)));
-        this.strip.pixel(2).color(rgbToHex(parameters.red, parameters.green, parameters.blue));
+        var rgb = hexToRgb(parameters.hexColor);
+
+
+        this.strip.pixel(0).color(rgbToHex(parseInt(rgb.r * 0.3), parseInt(rgb.g * 0.3), parseInt(rgb.b * 0.3)));
+        this.strip.pixel(1).color(rgbToHex(parseInt(rgb.r * 0.5), parseInt(rgb.g * 0.5), parseInt(rgb.b * 0.5)));
+        this.strip.pixel(2).color(rgbToHex(rgb.r, rgb.g, rgb.b));
 
         this.showPixel();
 
@@ -192,13 +205,13 @@ function Pixel() {
 
             this.showPixel();
 
-            if (this.strip.pixel(this.configuration.number).color().hexcode === rgbToHex(parameters.red, parameters.green, parameters.blue).toUpperCase()) {
+            if (this.strip.pixel(this.configuration.number).color().hexcode === rgbToHex(rgb.r, rgb.g, rgb.b).toUpperCase()) {
 
                 this.strip.off();
 
-                this.strip.pixel(0).color(rgbToHex(parseInt(parameters.red * 0.3), parseInt(parameters.green * 0.3), parseInt(parameters.blue * 0.3)));
-                this.strip.pixel(1).color(rgbToHex(parseInt(parameters.red * 0.5), parseInt(parameters.green * 0.5), parseInt(parameters.blue * 0.5)));
-                this.strip.pixel(2).color(rgbToHex(parameters.red, parameters.green, parameters.blue));
+                this.strip.pixel(0).color(rgbToHex(parseInt(rgb.r * 0.3), parseInt(rgb.g * 0.3), parseInt(rgb.b * 0.3)));
+                this.strip.pixel(1).color(rgbToHex(parseInt(rgb.r * 0.5), parseInt(rgb.g * 0.5), parseInt(rgb.b * 0.5)));
+                this.strip.pixel(2).color(rgbToHex(rgb.r, rgb.g, rgb.b));
 
                 this.showPixel();
             }
@@ -259,4 +272,28 @@ function Pixel() {
  */
 function rgbToHex(r, g, b) {
     return "#" + ((1 << 24) + (Math.min(r, 255) << 16) + (Math.min(g, 255) << 8) + Math.min(b, 255)).toString(16).slice(1);
+}
+
+
+/**
+ *
+ * @param hex
+ * @returns
+ */
+function hexToRgb(hex) {
+    // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+
+    var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+
+    hex = hex.replace(shorthandRegex, function (m, r, g, b) {
+        return r + r + g + g + b + b;
+    });
+
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
 }

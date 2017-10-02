@@ -90,6 +90,8 @@ function Thermostat() {
             setpoint: tempRangeMidpoint
         };
 
+        //this.logLevel = 'debug';
+
         if (this.isSimulated()) {
             this.logDebug("Starting in simulated mode");
 
@@ -98,9 +100,96 @@ function Thermostat() {
             }.bind(this), 10000);
         } else {
             this.logDebug("Starting in non-simulated mode");
+
+
+            var five = require("johnny-five");
+
+
+            this.buttonIncrease = new five.Button({
+                pin: 6,
+                isPullup: true
+            });
+
+            this.buttonDecrease = new five.Button({
+                pin: 7,
+                isPullup: true
+            });
+
+            this.multi = new five.Multi({
+                controller: "BME280",
+                freq: 1000
+            });
+
+            this.lcd = new five.LCD({
+                pins: [8, 9, 10, 11, 12, 13],
+                rows: 4,
+                cols: 16
+            });
+
+            this.led1 = new five.Led.RGB({
+                controller: "PCA9685",
+
+                pins: {
+                    red: 2,
+                    green: 1,
+                    blue: 0
+                }
+            });
+
+            this.led2 = new five.Led.RGB({
+                controller: "PCA9685",
+
+                pins: {
+                    red: 3,
+                    green: 4,
+                    blue: 5
+                }
+            });
+
+            this.led3 = new five.Led.RGB({
+                controller: "PCA9685",
+                isAnode: false,
+                pins: {
+                    red: 6,
+                    green: 7,
+                    blue: 8
+                }
+            });
+
+
+            //LCD Preperation
+            this.lcd.clear();
+            this.lcd.cursor(0, 0);
+            this.lcd.print("Temperature: ");
+            this.lcd.cursor(0, 16);
+            this.lcd.print("Setp");
+            this.lcd.cursor(2, 0);
+            this.lcd.print("oint: ");
+            this.lcd.cursor(3, 0);
+            this.lcd.print(" C");
+
+
+            // Register Listeners
+            this.buttonIncrease.on("up", function () {
+                this.incrementSetpoint();
+            }.bind(this));
+
+            this.buttonDecrease.on("up", function () {
+                this.decrementSetpoint();
+            }.bind(this));
+
+            var self = this;
+
+            this.multi.on("data", function () {
+                self.state.liveTemperature = this.thermometer.celsius;
+            });
+
         }
 
-        this.update();
+        this.productionInterval = setInterval(function () {
+            this.update()
+        }.bind(this), 1000);
+
 
         return q();
     };
@@ -118,7 +207,10 @@ function Thermostat() {
 
             promise = q();
         } else {
-            // TODO Julian - muss hier was aufgeraumt werden?
+            if (this.productionInterval) {
+                clearInterval(this.simulationInterval);
+            }
+            promise = q();
         }
 
         return promise;
@@ -177,7 +269,7 @@ function Thermostat() {
                 this.publishStateChange();
                 this.logDebug('Values updated.');
             }.bind(this))
-            .catch(function (error){
+            .catch(function (error) {
                 this.logError(error);
                 return q();
             }.bind(this));
@@ -205,7 +297,7 @@ function Thermostat() {
     };
 
     /**
-     * TODO Julian - connect the button for increasing the setpoint to this method.
+     * TODO Julian - connect the button for increasing the setpoint to this method. DONE
      */
     Thermostat.prototype.incrementSetpoint = function () {
         var promise;
@@ -221,7 +313,7 @@ function Thermostat() {
     };
 
     /**
-     * TODO Julian - connect the button for decreasing the setpoint to this method.
+     * TODO Julian - connect the button for decreasing the setpoint to this method. DONE
      */
     Thermostat.prototype.decrementSetpoint = function () {
         var promise;
@@ -259,9 +351,15 @@ function Thermostat() {
             }
 
             promise = q(this.state.temperature);
+
         } else {
+
             promise = deferred.promise;
-            this.state.temperature = 20; // TODO Julian - implement actual sensor update call instead and make sure to resolve or reject deferred
+
+            this.state.temperature = this.state.liveTemperature; // TODO Julian - implement actual sensor update call instead and make sure to resolve or reject deferred DONE
+
+            promise = q(this.state.temperature);
+
         }
 
         this.logDebug('Temperature retrieved.', this.state.temperature);
@@ -293,7 +391,7 @@ function Thermostat() {
             promise = this.setMode('NEUTRAL');
         }
 
-        return promise.then(function(){
+        return promise.then(function () {
             return this.updateDisplay();
         }.bind(this));
     };
@@ -330,7 +428,7 @@ function Thermostat() {
      * @param color
      */
     Thermostat.prototype.updateLEDs = function (color) {
-        this.logDebug('Setting LED color.', color);
+        this.logDebug('Setting LED color:', color);
         var promise;
         var deferred = q.defer();
 
@@ -338,6 +436,13 @@ function Thermostat() {
             promise = q();
         } else {
             // TODO Julian - implement actual LED update call, make sure to resolve or reject 'deferred'.
+
+            this.led1.color(color);
+            this.led2.color(color);
+            this.led3.color(color);
+
+            deferred.resolve();
+
             promise = deferred.promise;
         }
 
@@ -356,6 +461,14 @@ function Thermostat() {
         if (this.isSimulated()) {
             promise = q();
         } else {
+
+            this.lcd.cursor(1, 0);
+            this.lcd.print(this.state.temperature.toFixed(1) + " C");
+
+            this.lcd.cursor(1, 16);
+            this.lcd.print(this.state.setpoint.toFixed(1));
+
+            //deferred.resolve();
             // TODO Julian - implement actual Display update call, make sure to resolve or reject 'deferred'.
             promise = deferred.promise;
         }

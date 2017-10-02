@@ -272,7 +272,6 @@ function Lcd() {
 
 
         if (this.lcd) {
-            // TODO
 
             this.lcd.print(parameters.text);
         }

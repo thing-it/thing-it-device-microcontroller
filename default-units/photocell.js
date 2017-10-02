@@ -64,7 +64,6 @@ function Photocell() {
 
                 this.photocell.on("change", function (event) {
                     self.value = self.photocell.value;
-
                     self.change(event);
                 });
                 this.photocell.on("data", function () {

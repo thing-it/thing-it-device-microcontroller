@@ -14,12 +14,39 @@ module.exports = {
         }, {
             id: "blink",
             label: "Blink"
-        },{
+        }, {
+            id: "pulse",
+            label: "Pulse",
+            parameters: [{
+                label: "Speed",
+                id: "speed",
+                type: {
+                    id: "integer"
+                },
+                unit: "ms"
+            }]
+        }, {
             id: "brightness",
             label: "Brightness",
             parameters: [{
                 label: "Brightness",
                 id: "brightness",
+                type: {
+                    id: "integer"
+                }
+            }]
+        }, {
+            id: "fade",
+            label: "Fade",
+            parameters: [{
+                label: "Brightness",
+                id: "brightness",
+                type: {
+                    id: "integer"
+                }
+            }, {
+                label: "Time",
+                id: "time",
                 type: {
                     id: "integer"
                 }
@@ -226,9 +253,55 @@ function Led() {
             this.logDebug("########### Error in Microcontroller Actor. For safty reasons TIN is shutting down ###########");
             //process.exit();
         }
-
-
     }
+    /**
+     *
+     */
+    Led.prototype.pulse = function (parameters) {
+
+        try {
+            if (this.led) {
+                this.led.pulse(parameters.speed);
+            }
+
+            this.state.light = "pulse";
+
+            this.publishStateChange();
+
+        }
+        catch (err) {
+            this.logDebug("########### Error in Microcontroller Actor. For safty reasons TIN is shutting down ###########");
+            //process.exit();
+        }
+
+
+    };
+    /**
+     *
+     */
+    Led.prototype.fade = function (parameters) {
+
+        try {
+            if (this.led) {
+                this.led.fade(parameters.brightness, parameters.time, function () {
+
+                    if (parameters.brightness === 0) {
+                        this.state.light = "off";
+                    } else {
+                        this.state.light = "on"
+                    }
+
+                    this.publishStateChange();
+                });
+            }
+        }
+        catch (err) {
+            this.logDebug("########### Error in Microcontroller Actor. For safty reasons TIN is shutting down ###########");
+            //process.exit();
+        }
+
+
+    };
     /**
      *
      */
@@ -239,9 +312,9 @@ function Led() {
                 this.led.brightness(parameters.brightness);
             }
 
-            //this.state.light = "on";
+            this.state.light = "on";
 
-            //this.publishStateChange();
+            this.publishStateChange();
 
         }
         catch (err) {

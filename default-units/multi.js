@@ -47,6 +47,14 @@ module.exports = {
                     id: "BME280"
                 }]
             }
+        }, {
+            label: "Rate",
+            id: "rate",
+            type: {
+                id: "integer"
+            },
+            defaultValue: 1000,
+            unit: "ms"
         }]
     },
     create: function () {
@@ -67,8 +75,19 @@ function Multi() {
                 var five = require("johnny-five");
 
                 var multi = new five.Multi({
-                    controller: this.configuration.controller
+                    controller: this.configuration.controller,
+                    freq: this.configuration.rate
                 });
+
+
+                this.state = {
+                    thermometerCelsius: '',
+                    thermometerFahrenheit: '',
+                    thermometerKelvin: '',
+                    barometerPressure: '',
+                    hygrometerRelativeHumidity: ''
+                }
+                ;
 
                 var self = this;
 
@@ -80,13 +99,7 @@ function Multi() {
                     self.state.barometerPressure = this.barometer.pressure;
                     self.state.hygrometerRelativeHumidity = this.hygrometer.relativeHumidity;
 
-                    self.publishValueChangeEvent({
-                        thermometerCelsius: self.state.thermometerCelsius,
-                        thermometerFahrenheit: self.state.thermometerFahrenheit,
-                        thermometerKelvin: self.state.thermometerKelvin,
-                        barometerPressure: self.state.barometerPressure,
-                        hygrometerRelativeHumidity: self.state.hygrometerRelativeHumidity
-                    });
+                    self.publishStateChange();
 
 
                 });
@@ -95,5 +108,11 @@ function Multi() {
             this.publishMessage("Cannot initialize " + this.device.id + "/"
                 + this.id + ":" + x);
         }
+    };
+    /**
+     *
+     */
+    Multi.prototype.getState = function () {
+        return this.state;
     };
 };

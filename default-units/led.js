@@ -3,7 +3,7 @@ module.exports = {
         plugin: "led",
         label: "LED",
         role: "actor",
-        family: "light",
+        family: "dimmableLight",
         deviceTypes: ["microcontroller/microcontroller"],
         services: [{
             id: "on",

@@ -11,23 +11,18 @@ module.exports = {
         }, {
             id: "off",
             label: "Off"
+        }, {
+            id: "speed",
+            label: "Speed"
         }],
         state: [{
             id: "speed",
             label: "Speed",
             type: {
                 id: "integer"
-            }
+            }, defaultValue: "125"
         }],
         configuration: [{
-            label: "Pin",
-            id: "pin",
-            type: {
-                family: "reference",
-                id: "digitalInOutPin"
-            },
-            defaultValue: "12"
-        }, {
             label: "Controller",
             id: "controller",
             type: {
@@ -39,6 +34,20 @@ module.exports = {
                     label: "PCA9685",
                     id: "PCA9685"
                 }]
+            }
+        }, {
+            label: "Pin",
+            id: "pin",
+            type: {
+                family: "reference",
+                id: "digitalInOutPin"
+            },
+            defaultValue: "12"
+        }, {
+            label: "Inverted",
+            id: "inverted",
+            type: {
+                id: "boolean"
             }
         }]
     },
@@ -59,18 +68,18 @@ function Fan() {
     Fan.prototype.start = function () {
         var deferred = q.defer();
 
-        this.state = {
-            speed: 0
-        };
 
         if (!this.isSimulated()) {
             try {
                 var five = require("johnny-five");
 
                 this.fan = new five.Led({
-                    controller: this.configuration.controller,
-                    pin: this.configuration.pin,
+                    controller: "PCA9685",
+                    pin: 9
                 });
+
+
+                this.fan.brightness(0);
 
                 this.logDebug("Fan initialized.");
 
@@ -103,12 +112,32 @@ function Fan() {
      */
     Fan.prototype.setState = function (state) {
 
-       this.state =  Math.min(state.speed, 255);
+        this.state = Math.min(state.speed, 255);
 
         if (this.fan) {
-            this.fan = this.state.speed;
+            this.fan.brightness(this.state.speed);
+            this.publishStateChange();
         }
     };
+
+    /**
+     *
+     */
+    Fan.prototype.speed = function (speed) {
+
+        try {
+            if (this.fan) {
+                this.state.speed = Math.min(speed, 255);
+                this.fan.brightness(this.state.speed);
+            }
+
+            this.publishStateChange();
+        }
+        catch (err) {
+
+        }
+    };
+
 
     /**
      *
@@ -117,14 +146,13 @@ function Fan() {
 
         try {
             if (this.fan) {
-                this.fan.stop();
-                this.fan = this.state.speed;
+                this.fan.brightness(this.state.speed);
             }
 
             this.publishStateChange();
         }
         catch (err) {
-            this.logDebug("########### Error in Microcontroller Actor. ###########");
+
         }
     };
 
@@ -136,13 +164,13 @@ function Fan() {
         try {
 
             if (this.fan) {
-                this.fan.stop().off();
+                this.fan.stop();
             }
 
             this.publishStateChange();
         }
         catch (err) {
-            this.logDebug("########### Error in Microcontroller Actor. ###########");
+
 
         }
     };

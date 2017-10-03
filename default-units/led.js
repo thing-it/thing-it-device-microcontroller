@@ -61,6 +61,12 @@ module.exports = {
             type: {
                 id: "string"
             }
+        }, {
+            id: "brightness",
+            label: "Brightness",
+            type: {
+                id: "integer"
+            }
         }],
         configuration: [{
             label: "Pin",
@@ -109,7 +115,8 @@ function Led() {
         var deferred = q.defer();
 
         this.state = {
-            light: "off"
+            light: "off",
+            brightness : 0
         };
 
         if (!this.isSimulated()) {
@@ -156,9 +163,12 @@ function Led() {
         if (this.led) {
             if (this.state.light === "blink") {
                 this.led.blink();
+                this.led.brightness(this.state.brightness);
             } else if (this.state.light === "on") {
                 this.led.stop();
                 this.led.on();
+                this.led.brightness(this.state.brightness);
+
             } else {
                 this.led.stop().off();
             }
@@ -312,6 +322,7 @@ function Led() {
 
         try {
             if (this.led) {
+                this.state.brightness = parameters.brightness;
                 this.led.brightness(parameters.brightness);
             }
 
@@ -327,4 +338,5 @@ function Led() {
 
 
     }
-};
+}
+;

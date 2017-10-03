@@ -15,6 +15,9 @@ module.exports = {
             id: "blink",
             label: "Blink"
         }, {
+            id: "toggle",
+            label: "Toggle"
+        }, {
             id: "pulse",
             label: "Pulse",
             parameters: [{

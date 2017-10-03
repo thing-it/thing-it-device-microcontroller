@@ -267,7 +267,6 @@ function Proximity() {
 
                 this.publishValueChangeEvent({
                     objectInRange: true
-
                 });
 
             } else {

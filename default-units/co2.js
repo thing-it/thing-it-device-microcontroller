@@ -5,6 +5,13 @@ module.exports = {
         role: "sensor",
         family: "co2",
         deviceTypes: ["microcontroller/microcontroller"],
+        state: [{
+            id: "value",
+            label: "Value",
+            type: {
+                id: "integer"
+            }
+        }],
         configuration: [{
             label: "Pin",
             id: "pin",
@@ -22,19 +29,12 @@ module.exports = {
             defaultValue: 1000,
             unit: "ms"
         }, {
-            label: "Minimum",
-            id: "min",
+            label: "Threshold",
+            id: "threshold",
             type: {
                 id: "integer"
             },
-            defaultValue: 0
-        }, {
-            label: "Maximum",
-            id: "max",
-            type: {
-                id: "integer"
-            },
-            defaultValue: 1023
+            defaultValue: 1
         }]
     },
     create: function () {
@@ -54,24 +54,43 @@ function Potentiometer() {
             if (!this.isSimulated()) {
                 var five = require("johnny-five");
 
-                this.potentiometer = new five.Sensor({
+                this.co2 = new five.Sensor({
                     pin: this.configuration.pin,
-                    freq: this.configuration.rate
+                    freq: this.configuration.rate,
+                    threshold: this.configuration.threshold
                 });
+
+                //TODO We need some calculation for ppm values here Example: https://www.dfrobot.com/wiki/index.php/CO2_Sensor_SKU:SEN0159
 
                 var self = this;
 
-                this.potentiometer.on("change", function (event) {
-                    self.value = self.potentiometer.value;
+                this.co2.on("change", function () {
 
-                    self.change(event);
-                });
-                this.potentiometer.on("data", function () {
-                    self.value = self.potentiometer.value;
+                    self.state.value = this.value;
 
-                    self.data(self.potentiometer.value);
+                    self.publishValueChangeEvent({
+                        value: this.value
+                    });
+
+                    self.logDebug("Value: " + this.value);
+
                 });
+
+                this.co2.on("data", function () {
+
+                    self.state.value = this.value;
+
+                    self.publishValueChangeEvent({
+                        value: this.value
+                    });
+
+                    self.logDebug("Value: " + this.value);
+
+                });
+
+
             }
+
         } catch (x) {
             this.publishMessage("Cannot initialize " + this.device.id + "/"
                 + this.id + ":" + x);

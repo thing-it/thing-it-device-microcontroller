@@ -49,7 +49,20 @@ module.exports = {
             type: {
                 id: "boolean"
             }
-        }]
+        },{
+            label: "Controller",
+            id: "controller",
+            type: {
+                family: "enumeration",
+                values: [{
+                    label: "DEFAULT",
+                    id: "DEFAULT"
+                }, {
+                    label: "PCA9685",
+                    id: "PCA9685"
+                }]
+            }
+        },]
     },
     create: function () {
         return new Fan();
@@ -75,6 +88,7 @@ function Fan() {
 
                 this.fan = new five.Led({
                     controller: "PCA9685",
+                    // controller: this.configuration.controller,
                     pin: 9
                 });
 
@@ -146,6 +160,8 @@ function Fan() {
 
         try {
             if (this.fan) {
+                this.fan.on();
+                this.state.speed = 255;
                 this.fan.brightness(this.state.speed);
             }
 
@@ -164,6 +180,9 @@ function Fan() {
         try {
 
             if (this.fan) {
+                this.fan.off();
+                this.state.speed = 0;
+                this.fan.brightness(this.state.speed);
                 this.fan.stop();
             }
 

@@ -74,12 +74,12 @@ function Encoder() {
 
 
                 var upButton = new five.Button({
-                    pin: 17, //TODO Make this configurable.
+                    pin: 2, //TODO Make this configurable.
                     isPullup: true,
                 });
 
                 var downButton = new five.Button({
-                    pin: 2,//TODO Make this configurable.
+                    pin: 17,//TODO Make this configurable.
                     type: "digital",
                     isPullup: true,
                 });

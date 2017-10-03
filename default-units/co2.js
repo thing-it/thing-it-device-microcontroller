@@ -38,21 +38,25 @@ module.exports = {
         }]
     },
     create: function () {
-        return new Potentiometer();
+        return new Co2();
     }
 };
 
 /**
  *
  */
-function Potentiometer() {
+function Co2() {
     /**
      *
      */
-    Potentiometer.prototype.start = function () {
+    Co2.prototype.start = function () {
         try {
             if (!this.isSimulated()) {
                 var five = require("johnny-five");
+
+                this.state = {
+                    value: 0
+                };
 
                 this.co2 = new five.Sensor({
                     pin: this.configuration.pin,
@@ -95,5 +99,11 @@ function Potentiometer() {
             this.publishMessage("Cannot initialize " + this.device.id + "/"
                 + this.id + ":" + x);
         }
+    };
+
+
+
+    Co2.prototype.getState = function () {
+        return this.state;
     };
 };

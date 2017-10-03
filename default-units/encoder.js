@@ -39,13 +39,6 @@ module.exports = {
             },
             defaultValue: "12"
         }, {
-            label: "Pullup",
-            id: "pullup",
-            type: {
-                id: "boolean"
-            },
-            defaultValue: false
-        }, {
             label: "Step size",
             id: "stepSize",
             typ: {
@@ -77,7 +70,9 @@ function Encoder() {
             value: 0
         };
 
-        this.configuration.stepSize = 5;
+        if (!this.configuration.stepSize) {
+            this.configuration.stepSize = 5;
+        }
 
         if (!this.isSimulated()) {
             try {
@@ -85,21 +80,19 @@ function Encoder() {
                 var five = require("johnny-five");
 
 
-                //TODO Make this configurable.
-
                 var upButton = new five.Button({
-                    pin: 2,
+                    pin: 2, //TODO Make this configurable.
                     isPullup: true,
                 });
 
                 var downButton = new five.Button({
-                    pin: 17,
+                    pin: 17,//TODO Make this configurable.
                     type: "digital",
                     isPullup: true,
                 });
 
                 var pressButton = new five.Button({
-                    pin: 16,
+                    pin: 16,//TODO Make this configurable.
                     type: "digital",
                     isPullup: true,
                 });
@@ -120,10 +113,15 @@ function Encoder() {
 
                 pressButton.on('down', function () {
                     this.state.switch = !this.state.switch;
-                    console.log(this.state.switch);
+
+                    this.logDebug("Switch State: " + this.state.switch);
+
+                    this.publishStateChange();
+
                 }.bind(this));
 
                 var self = this;
+
 
                 function handleWaveform() {
                     if (waveform.length < 2) {
@@ -140,28 +138,27 @@ function Encoder() {
                     if (waveform === '01') {
 
                         self.state.value = Math.min(self.state.value + self.configuration.stepSize, 255);
-                        console.log(self.state.value);
-                        this.publishStateChange();
+
+                        self.publishStateChange();
+                        self.publishEvent("increase");
 
                     } else if (waveform === '10') {
-
-
                         self.state.value = self.state.value - self.configuration.stepSize;
 
                         if (self.state.value < 0) {
                             self.state.value = 0;
                         }
-                        console.log(self.state.value);
+
+                        self.publishEvent("decrease");
+                        self.publishStateChange();
                     }
 
                     waveform = '';
-                };
-
+                }
 
                 deferred.resolve();
 
-            } catch
-                (error) {
+            } catch (error) {
                 this.device.node
                     .publishMessage("Cannot initialize " +
                         this.device.id + "/" + this.id +

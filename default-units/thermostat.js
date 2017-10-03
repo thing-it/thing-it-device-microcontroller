@@ -208,7 +208,7 @@ function Thermostat() {
             promise = q();
         } else {
             if (this.productionInterval) {
-                clearInterval(this.simulationInterval);
+                clearInterval(this.productionInterval);
             }
             promise = q();
         }
@@ -468,7 +468,7 @@ function Thermostat() {
             this.lcd.cursor(1, 16);
             this.lcd.print(this.state.setpoint.toFixed(1));
 
-            //deferred.resolve();
+            deferred.resolve();
             // TODO Julian - implement actual Display update call, make sure to resolve or reject 'deferred'.
             promise = deferred.promise;
         }

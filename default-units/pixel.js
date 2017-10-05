@@ -153,14 +153,15 @@ function Pixel() {
      *
      */
     Pixel.prototype.setState = function (state) {
-
+        this.state = state;
     };
 
     /**
      *
      */
     Pixel.prototype.on = function () {
-
+        this.state.light = "on";
+        this.publishStateChange();
     };
 
     /**
@@ -177,6 +178,7 @@ function Pixel() {
             clearInterval(this.loadingInterval);
         }
 
+        this.state.light = "off";
         this.publishStateChange();
 
     };
@@ -187,36 +189,39 @@ function Pixel() {
     Pixel.prototype.loading = function (parameters) {
         var pixel = require("node-pixel");
 
-        this.off();
+        if (!this.isSimulated()) {
 
-        var rgb = hexToRgb(parameters.hexColor);
+            this.off();
 
-
-        this.strip.pixel(0).color(rgbToHex(parseInt(rgb.r * 0.3), parseInt(rgb.g * 0.3), parseInt(rgb.b * 0.3)));
-        this.strip.pixel(1).color(rgbToHex(parseInt(rgb.r * 0.5), parseInt(rgb.g * 0.5), parseInt(rgb.b * 0.5)));
-        this.strip.pixel(2).color(rgbToHex(rgb.r, rgb.g, rgb.b));
-
-        this.showPixel();
+            var rgb = hexToRgb(parameters.hexColor);
 
 
-        this.loadingInterval = setInterval(function () {
-
-            this.strip.shift(1, pixel.FORWARD, true);
+            this.strip.pixel(0).color(rgbToHex(parseInt(rgb.r * 0.3), parseInt(rgb.g * 0.3), parseInt(rgb.b * 0.3)));
+            this.strip.pixel(1).color(rgbToHex(parseInt(rgb.r * 0.5), parseInt(rgb.g * 0.5), parseInt(rgb.b * 0.5)));
+            this.strip.pixel(2).color(rgbToHex(rgb.r, rgb.g, rgb.b));
 
             this.showPixel();
 
-            if (this.strip.pixel(this.configuration.number).color().hexcode === rgbToHex(rgb.r, rgb.g, rgb.b).toUpperCase()) {
 
-                this.strip.off();
+            this.loadingInterval = setInterval(function () {
 
-                this.strip.pixel(0).color(rgbToHex(parseInt(rgb.r * 0.3), parseInt(rgb.g * 0.3), parseInt(rgb.b * 0.3)));
-                this.strip.pixel(1).color(rgbToHex(parseInt(rgb.r * 0.5), parseInt(rgb.g * 0.5), parseInt(rgb.b * 0.5)));
-                this.strip.pixel(2).color(rgbToHex(rgb.r, rgb.g, rgb.b));
+                this.strip.shift(1, pixel.FORWARD, true);
 
                 this.showPixel();
-            }
 
-        }.bind(this), 1000 / parameters.speed);
+                if (this.strip.pixel(this.configuration.number).color().hexcode === rgbToHex(rgb.r, rgb.g, rgb.b).toUpperCase()) {
+
+                    this.strip.off();
+
+                    this.strip.pixel(0).color(rgbToHex(parseInt(rgb.r * 0.3), parseInt(rgb.g * 0.3), parseInt(rgb.b * 0.3)));
+                    this.strip.pixel(1).color(rgbToHex(parseInt(rgb.r * 0.5), parseInt(rgb.g * 0.5), parseInt(rgb.b * 0.5)));
+                    this.strip.pixel(2).color(rgbToHex(rgb.r, rgb.g, rgb.b));
+
+                    this.showPixel();
+                }
+
+            }.bind(this), 1000 / parameters.speed);
+        }
 
 
     };
@@ -226,9 +231,17 @@ function Pixel() {
      */
     Pixel.prototype.setPixel = function (parameters) {
 
-        this.strip.pixel(parameters.position).color(rgbToHex(parameters.red, parameters.green, parameters.blue));
+        if (!this.isSimulated()) {
+            this.strip.pixel(parameters.position).color(rgbToHex(parameters.red, parameters.green, parameters.blue));
 
-        this.showPixel();
+            this.showPixel();
+        }
+
+        if (!parameters || parameters.hexColor == "#000000") {
+            this.off();
+        } else {
+            this.on();
+        }
 
     };
 
@@ -237,11 +250,19 @@ function Pixel() {
      */
     Pixel.prototype.setAllPixel = function (parameters) {
 
-        for (var i = 0; i < this.configuration.number; i++) {
-            this.strip.pixel(i).color(parameters.hexColor);
+        if (!this.isSimulated()) {
+            for (var i = 0; i < this.configuration.number; i++) {
+                this.strip.pixel(i).color(parameters.hexColor);
+            }
+
+            this.showPixel();
         }
 
-        this.showPixel();
+        if (!parameters || parameters.hexColor == "#000000") {
+            this.off();
+        } else {
+            this.on();
+        }
 
     };
 
@@ -251,13 +272,16 @@ function Pixel() {
      */
     Pixel.prototype.showPixel = function (parameters) {
 
-        for (var c = 0; c < this.configuration.clone; c++) {
-            for (var i = 0; i < this.configuration.number; i++) {
-                this.strip.pixel((parseInt(i) + (parseInt(this.configuration.number) * c))).color(this.strip.pixel(i).color().hexcode);
-            }
-        }
+        if (!this.isSimulated()) {
 
-        this.strip.show();
+            for (var c = 0; c < this.configuration.clone; c++) {
+                for (var i = 0; i < this.configuration.number; i++) {
+                    this.strip.pixel((parseInt(i) + (parseInt(this.configuration.number) * c))).color(this.strip.pixel(i).color().hexcode);
+                }
+            }
+
+            this.strip.show();
+        }
     };
 
 };

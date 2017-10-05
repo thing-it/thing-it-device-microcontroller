@@ -176,11 +176,11 @@ function Proximity() {
                 if (sensorChanged) {
 
                     console.log("Sensor changed");
+
                     if (firstDetection) {
                         console.log("object gefunden");
+
                         self.publishEvent('objectDetectionStarted');
-
-
 
                         values = [];
                         firstDetection = false;
@@ -239,7 +239,7 @@ function Proximity() {
      *
      */
     Proximity.prototype.setTreshold = function (parameters) {
-        console.log("Service Call #######")
+        console.log("Service Call #######");
         if (this.proximity) {
             this.state.tresholdCM = parameters.distance;
             this.state.tresholdTime = parameters.time;
@@ -262,24 +262,20 @@ function Proximity() {
 
             var currentObectInRangeValue = this.state.objectInRange;
 
-            if (this.state.tresholdCM > this.state.distanceCM - this.state.tolerance && this.state.tresholdCM + this.state.tolerance) {
+            if (this.state.tresholdCM >= (this.state.distanceCM - this.state.tolerance)) {
 
                 this.state.objectInRange = true;
                 console.log("event");
 
                 if (currentObectInRangeValue != this.state.objectInRange) {
-                    this.publishValueChangeEvent({
-                        objectInRange: true
-                    });
+                    this.publishStateChange();
                 }
 
             } else {
                 this.state.objectInRange = false;
 
                 if (currentObectInRangeValue != this.state.objectInRange) {
-                    this.publishValueChangeEvent({
-                        objectInRange: false
-                    });
+                    this.publishStateChange();
                 }
             }
         }

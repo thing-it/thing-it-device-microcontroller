@@ -196,7 +196,6 @@ function Proximity() {
 
                         self.state.distanceCM = sum / values.length;
                         self.checkRange();
-                        self.publishStateChange();
                         sensorChanged = false;
 
                     }
@@ -261,21 +260,27 @@ function Proximity() {
         console.log("check range");
         if (this.proximity && this.state.tresholdCM) {
 
+            var currentObectInRangeValue = this.state.objectInRange;
+
             if (this.state.tresholdCM > this.state.distanceCM - this.state.tolerance && this.state.tresholdCM + this.state.tolerance) {
 
                 this.state.objectInRange = true;
                 console.log("event");
 
-                this.publishValueChangeEvent({
-                    objectInRange: true
-                });
+                if (currentObectInRangeValue != this.state.objectInRange) {
+                    this.publishValueChangeEvent({
+                        objectInRange: true
+                    });
+                }
 
             } else {
                 this.state.objectInRange = false;
 
-                this.publishValueChangeEvent({
-                    objectInRange: false
-                });
+                if (currentObectInRangeValue != this.state.objectInRange) {
+                    this.publishValueChangeEvent({
+                        objectInRange: false
+                    });
+                }
             }
         }
     };

@@ -232,7 +232,8 @@ function Proximity() {
      *
      */
     Proximity.prototype.setState = function (state) {
-
+        this.state = state;
+        this.publishStateChange();
     };
 
     /**

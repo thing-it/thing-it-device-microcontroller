@@ -66,7 +66,6 @@ module.exports = {
                 },
                 defaultValue: 1
             }
-            // TODO Julian - add configuration for temp sensor, display, increase button, decrease button, mode LEDs
         ]
     },
     create: function () {
@@ -297,7 +296,7 @@ function Thermostat() {
     };
 
     /**
-     * TODO Julian - connect the button for increasing the setpoint to this method. DONE
+     *
      */
     Thermostat.prototype.incrementSetpoint = function () {
         var promise;
@@ -313,7 +312,7 @@ function Thermostat() {
     };
 
     /**
-     * TODO Julian - connect the button for decreasing the setpoint to this method. DONE
+     *
      */
     Thermostat.prototype.decrementSetpoint = function () {
         var promise;
@@ -356,7 +355,7 @@ function Thermostat() {
 
             promise = deferred.promise;
 
-            this.state.temperature = this.state.liveTemperature; // TODO Julian - implement actual sensor update call instead and make sure to resolve or reject deferred DONE
+            this.state.temperature = this.state.liveTemperature;
 
             promise = q(this.state.temperature);
 
@@ -406,7 +405,6 @@ function Thermostat() {
         this.state.mode = mode;
 
         switch (mode) {
-            // TODO Julian - replace the color names with what you actually want to send to the LED.
             case 'HEAT':
                 color = 'red';
                 break;
@@ -435,7 +433,6 @@ function Thermostat() {
         if (this.isSimulated()) {
             promise = q();
         } else {
-            // TODO Julian - implement actual LED update call, make sure to resolve or reject 'deferred'.
 
             this.led1.color(color);
             this.led2.color(color);
@@ -445,7 +442,7 @@ function Thermostat() {
 
             promise = deferred.promise;
         }
-
+        
         return promise;
     };
 
@@ -469,7 +466,6 @@ function Thermostat() {
             this.lcd.print(this.state.setpoint.toFixed(1));
 
             deferred.resolve();
-            // TODO Julian - implement actual Display update call, make sure to resolve or reject 'deferred'.
             promise = deferred.promise;
         }
 

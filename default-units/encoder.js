@@ -132,8 +132,8 @@ function Encoder() {
 
                         self.state.value = Math.min(self.state.value + self.configuration.stepSize, 255);
 
-                        self.publishStateChange();
                         self.publishEvent("increase");
+                        self.publishStateChange();
 
                     } else if (waveform === '10') {
                         self.state.value = self.state.value - self.configuration.stepSize;

@@ -223,8 +223,9 @@ function Microcontroller() {
             }.bind(this);
 
 
-
-            cleanUp().then(bindBoard).then(addListener);
+            cleanUp()
+                .then(bindBoard)
+                .then(addListener);
 
 
         }

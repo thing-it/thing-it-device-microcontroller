@@ -222,11 +222,9 @@ function Microcontroller() {
                 return promise;
             }.bind(this);
 
-
             cleanUp()
                 .then(bindBoard)
                 .then(addListener);
-
 
         }
         return deferred.promise;

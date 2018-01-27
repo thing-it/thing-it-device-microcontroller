@@ -22,22 +22,31 @@ After you have
 connect your microcontroller to your [thing-it] Node Box via a USB cable.
 
 
-####NOTE!
-The Node-Pixel Actor only works with Arduino as Microcontroller and requires a custom version of the Arduino Firmata. Installation instructions can be found [here](https://github.com/ajfisher/node-pixel/blob/master/docs/installation.md).
-
-
 ## User Interface
 
 The appearance of the UI of the Microcontroller Plugin on the [thing-it] Mobile Client depends on the configured Actors and Sensors
 
 ### Light Sensor
-Light sensor uses i2c interface. This must be activated first via sudo raspi-config -> interfaces
+##### Note: Light sensor uses i2c interface.
+For Microcontroller Typ: Raspberry PI this must be activated first via sudo raspi-config -> interfaces
+
+
+###### Connection:
+
+| Raspberry Pi pin (function)  |  TSL2564/BH1750|
+|---|---|
+| 6/9/14/20/25/30/34 (GND)|GND|
+| 1/17 (3.3V)  |VCC|
+| 5 (SCL)|SCL|
+| 3 (SDA)|SDA|
 
 ### LED
 
 ### RGB LED
 
-### Addressable LED (WS2812B) 
+### Addressable LED (WS2812B)
+The Pixel Actor only works with Arduino as Microcontroller and requires a custom version of the Arduino Firmata. Installation instructions can be found [here](https://github.com/ajfisher/node-pixel/blob/master/docs/installation.md).
+
 
 ### Button
 

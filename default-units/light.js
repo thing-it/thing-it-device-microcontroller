@@ -3,15 +3,21 @@ module.exports = {
         plugin: "lightSensor",
         label: "Light Sensor",
         role: "sensor",
-        family: "light",
+        family: "lightSensor",
         deviceTypes: ["microcontroller/microcontroller"],
-        unit: "LUX",
+        events: [{
+            id: "highThresholdReached",
+            label: "High threshold reached"
+        }, {
+            id: "lowThresholdReached",
+            label: "Low threshold reached"
+        }],
         state: [{
             id: "luminance",
             label: "Luminance",
             type: {
                 id: "number"
-            }
+            },
         }],
         configuration: [{
             label: "Controller",
@@ -27,13 +33,21 @@ module.exports = {
                 }]
             }
         }, {
-            label: "Threshold",
-            id: "threshold",
+            label: "Threshold High",
+            id: "thresholdHigh",
             type: {
                 id: "number"
             },
             unit: "LUX",
-            defaultValue: 10,
+            defaultValue: 180,
+        }, {
+            label: "Threshold Low",
+            id: "thresholdLow",
+            type: {
+                id: "number"
+            },
+            unit: "LUX",
+            defaultValue: 60,
         }, {
             label: "Average Time",
             id: "averageTime",
@@ -74,27 +88,50 @@ function LightSensor() {
                 });
 
                 var value = [];
+                var highEvent = false;
+                var lowEvent = false;
+
                 var self = this;
 
-                this.lightSensor.on("data", function (data) {
 
+                this.lightSensor.on("data", function (data) {
                     value.push(data.lux);
 
                     if (value.length > self.configuration.averageTime * 2) {
                         value.shift();
-                        let sum = value.reduce(function (a, b) {
-                            return (a + b)
-                        });
+                    }
 
-                        let average = (sum / value.length).toFixed(2);
+                    let sum = value.reduce(function (a, b) {
+                        return (a + b)
+                    });
 
-                        if ((Math.abs(average - self.state.luminance)) >= self.configuration.threshold) {
-                            self.state.luminance = average;
-                            self.logDebug("\x1b[36mLuminance: \x1b[0m" + self.state.luminance);
-                            self.publishStateChange();
-                        }
+                    let average = Math.round((sum / value.length));
+
+                    if (average !== self.state.luminance) {
+                        self.state.luminance = average;
+                        self.logDebug("\x1b[36mLuminance: \x1b[0m" + self.state.luminance);
+                        self.publishStateChange();
+                    }
+
+                    if ((average > self.configuration.thresholdHigh) && !highEvent) {
+                        highEvent = true;
+                        self.publishEvent('highThresholdReached');
+                    }
+
+                    if (average < self.configuration.thresholdHigh) {
+                        highEvent = false;
+                    }
+
+                    if ((average < self.configuration.thresholdLow) && !lowEvent) {
+                        lowEvent = true;
+                        self.publishEvent('lowThresholdReached');
+                    }
+
+                    if (average > self.configuration.thresholdLow) {
+                        lowEvent = false;
                     }
                 });
+
             }
         } catch (x) {
             this.publishMessage("Cannot initialize " + this.device.id + "/"

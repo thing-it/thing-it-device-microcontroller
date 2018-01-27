@@ -36,7 +36,7 @@ module.exports = {
             label: "Threshold High",
             id: "thresholdHigh",
             type: {
-                id: "number"
+                id: "integer"
             },
             unit: "LUX",
             defaultValue: 180,
@@ -44,7 +44,7 @@ module.exports = {
             label: "Threshold Low",
             id: "thresholdLow",
             type: {
-                id: "number"
+                id: "integer"
             },
             unit: "LUX",
             defaultValue: 60,
@@ -52,7 +52,7 @@ module.exports = {
             label: "Average Time",
             id: "averageTime",
             type: {
-                id: "number"
+                id: "integer"
             },
             unit: "sec",
             defaultValue: 30,

@@ -30,6 +30,9 @@ The Node-Pixel Actor only works with Arduino as Microcontroller and requires a c
 
 The appearance of the UI of the Microcontroller Plugin on the [thing-it] Mobile Client depends on the configured Actors and Sensors
 
+### Light Sensor
+Light sensor uses i2c interface. This must be activated first via sudo raspi-config -> interfaces
+
 ### LED
 
 ### RGB LED

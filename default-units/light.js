@@ -74,7 +74,7 @@ function LightSensor() {
         try {
             if (!this.isSimulated()) {
 
-                this.logLevel = 'debug';
+                //this.logLevel = 'debug';
 
                 var five = require("johnny-five");
 
@@ -130,6 +130,7 @@ function LightSensor() {
                     if (average > self.configuration.thresholdLow) {
                         lowEvent = false;
                     }
+
                 });
 
             }

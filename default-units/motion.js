@@ -18,6 +18,12 @@ module.exports = {
             type: {
                 id: "boolean"
             }
+        }, {
+            id: "ticks",
+            label: "Ticks",
+            type: {
+                id: "integer"
+            }
         }],
         configuration: [{
             label: "Pin",
@@ -50,31 +56,48 @@ function Motion() {
      *
      */
     Motion.prototype.start = function () {
-
         this.logLevel = 'debug';
-
         try {
             if (!this.isSimulated()) {
-                var five = require("johnny-five");
 
-                this.state = {
-                    detected: false
-                };
-
-                var timer;
+                let five = require("johnny-five");
 
                 this.motion = new five.Motion({
                     controller: "HCSR501", //TODO Make Configurable
                     pin: this.configuration.pin
                 });
 
-                var self = this;
+                this.state = {
+                    motion: false,
+                    ticks: 0
+                };
 
+                let timer;
+                let self = this;
 
                 this.motion.on("motionstart", function () {
-                    self.state.motion = true;
-                    self.publishStateChange();
-                    self.publishEvent('motionDetected');
+
+                    if (self.state.motion === false) {
+                        self.state.motion = true;
+                        self.state.ticks = 1;
+                        self.publishStateChange();
+
+                        self.publishEvent('motionDetected', {
+                                motion: self.state.motion,
+                                ticks: self.state.ticks
+                            }
+                        );
+
+                    } else {
+                        self.state.ticks = self.state.ticks + 1;
+                        self.publishStateChange();
+
+                        self.publishEvent('tic', {
+                                motion: self.state.motion,
+                                ticks: self.state.ticks
+                            }
+                        );
+                    }
 
                     self.logDebug("\x1b[36mMotion detected\x1b[0m and Timer reset");
 
@@ -82,16 +105,18 @@ function Motion() {
 
                     timer = setTimeout(function () {
                         self.state.motion = false;
+                        self.state.ticks = 0;
                         self.publishStateChange();
-                        self.publishEvent('noMoreMotion');
 
+                        self.publishEvent('noMoreMotion', {
+                            motion: self.state.motion,
+                            ticks: self.state.ticks
+                        });
                         self.logDebug("Release Time Over");
-
                     }, self.configuration.releaseTime * 1000)
-
                 });
-            }
 
+            }
         } catch (x) {
             this.publishMessage("Cannot initialize " + this.device.id + "/"
                 + this.id + ":" + x);

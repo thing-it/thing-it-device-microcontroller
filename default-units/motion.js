@@ -13,16 +13,22 @@ module.exports = {
             label: "No more Motion"
         }],
         state: [{
-            id: "motion",
-            label: "Motion",
+            label: "Occupied",
+            id: "occupied",
             type: {
                 id: "boolean"
             }
         }, {
-            id: "ticks",
-            label: "Ticks",
+            label: "Ticks/Minute",
+            id: "ticksPerMinute",
             type: {
                 id: "integer"
+            }
+        }, {
+            label: "Last Motion Timestamp",
+            id: "lastMotionTimestamp",
+            type: {
+                id: "string"
             }
         }],
         configuration: [{
@@ -39,14 +45,25 @@ module.exports = {
             type: {
                 id: "integer"
             },
-            defaultValue: 5000,
+            defaultValue: 240,
             unit: "s"
-        },]
+        }, {
+            label: "Tick count Time",
+            id: "tickCountTime",
+            type: {
+                id: "integer"
+            },
+            defaultValue: 4,
+            unit: "m"
+        }]
     },
     create: function () {
         return new Motion();
     }
 };
+
+
+var moment = require('moment');
 
 /**
  *
@@ -57,6 +74,7 @@ function Motion() {
      */
     Motion.prototype.start = function () {
         this.logLevel = 'debug';
+
         try {
             if (!this.isSimulated()) {
 
@@ -66,58 +84,74 @@ function Motion() {
                     controller: "HCSR501", //TODO Make Configurable
                     pin: this.configuration.pin
                 });
+                //
+                // this.state = {
+                //     motion: false,
+                //     ticksPerMinute: 0
+                // };
 
                 this.state = {
-                    motion: false,
-                    ticks: 0
+                    occupied: false,
+                    ticksPerMinute: 0
                 };
 
-                let timer;
+
                 let self = this;
+                let lastTicks = [];
 
                 this.motion.on("motionstart", function () {
+                    lastTicks.unshift(Date.now());
+                    this.state.lastMotionTimestamp = moment().toISOString();
 
-                    if (self.state.motion === false) {
-                        self.state.motion = true;
-                        self.state.ticks = 1;
-                        self.publishStateChange();
 
-                        self.publishEvent('motionDetected', {
-                                motion: self.state.motion,
-                                ticks: self.state.ticks
-                            }
-                        );
+                    if (this.state.occupied === false) {
+
+                        this.state.occupied = true;
+                        this.publishStateChange();
+
+                        this.publishEvent('motionDetected', {
+                            occupied: this.state.occupied,
+                            ticksPerMinute: this.state.ticksPerMinute
+                        });
 
                     } else {
-                        self.state.ticks = self.state.ticks + 1;
-                        self.publishStateChange();
-
                         self.publishEvent('tic', {
-                                motion: self.state.motion,
-                                ticks: self.state.ticks
+                                occupied: this.state.occupied,
+                                ticksPerMinute: this.state.ticksPerMinute
                             }
                         );
+
                     }
 
-                    self.logDebug("\x1b[36mMotion detected\x1b[0m and Timer reset");
+                    this.logDebug("\x1b[36mMotion detected\x1b[0m and Timer reset");
 
-                    clearTimeout(timer);
+                    clearTimeout(this.timer);
 
-                    timer = setTimeout(function () {
-                        self.state.motion = false;
-                        self.state.ticks = 0;
-                        self.publishStateChange();
-
-                        self.publishEvent('noMoreMotion', {
-                            motion: self.state.motion,
-                            ticks: self.state.ticks
+                    this.timer = setTimeout(function () {
+                        this.state.occupied = false;
+                        this.publishStateChange();
+                        this.publishEvent('noMoreMotion', {
+                            occupied: this.state.motion,
+                            ticksPerMinute: this.state.ticksPerMinute
                         });
-                        self.logDebug("Release Time Over");
-                    }, self.configuration.releaseTime * 1000)
-                });
+                        this.logDebug("Release Time Over");
+                    }.bind(this), this.configuration.releaseTime * 1000)
+                }.bind(this));
+
+
+                this.tickInterval = setInterval(function () {
+                    let timestamp = Date.now();
+                    while ((timestamp - lastTicks[lastTicks.length - 1]) > (this.configuration.tickCountTime * 60000)) {
+                        lastTicks.pop();
+                    }
+                    this.state.ticksPerMinute = (lastTicks.length / this.configuration.tickCountTime).toFixed();
+                    this.publishStateChange();
+                }.bind(this), 5000);
+
 
             }
-        } catch (x) {
+        } catch
+            (x) {
             this.publishMessage("Cannot initialize " + this.device.id + "/"
                 + this.id + ":" + x);
         }
@@ -126,5 +160,10 @@ function Motion() {
 
     Motion.prototype.getState = function () {
         return this.state;
+    };
+
+    Motion.prototype.stop = function () {
+        clearTimeout(this.timer);
+        clearInterval(this.tickInterval);
     };
 };

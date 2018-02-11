@@ -12,8 +12,16 @@ angular.module('testApp', ['ThingItMobile.PluginDirectives'])
                 gateStatus: false
             },
 
-            openForTime: function () {
-                this.gate._state.gateStatus = !this.gate._state.gateStatus;
+            // openForTime: function () {
+            //     this.gate._state.gateStatus = !this.gate._state.gateStatus;
+            // }
+        };
+
+
+        this.motion = {
+            _state: {
+                motion: false,
+                ticks: 3
             }
         };
 

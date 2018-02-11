@@ -63,3 +63,32 @@ For Microcontroller Typ: Raspberry PI this must be activated first via sudo rasp
 | 5 (SCL)|SCL|
 | 3 (SDA)|SDA|
 
+
+#### Light Sensor
+**Note: Light sensor uses i2c interface.
+For Microcontroller Typ: Raspberry PI this must be activated first via sudo raspi-config -> interfaces**
+
+
+**Connection:**
+
+| Raspberry Pi pin (function)  |  TSL2564/BH1750|
+|---|---|
+| 6/9/14/20/25/30/34 (GND)|GND|
+| 1/17 (3.3V)  |VCC|
+| 5 (SCL)|SCL|
+| 3 (SDA)|SDA|
+
+Once I2C is enabled, we need to slow the speed way down due to constraints of this particular sensor.
+
+via
+```
+sudo nano /boot/config.txt
+```
+
+add this line to the file
+
+```
+dtparam=i2c_baudrate=10000
+```
+
+safe and reboot

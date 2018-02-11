@@ -58,6 +58,13 @@
              ng-include="'../web/gate.html'"></div>
     </div>
 
+    <h1>Motion</h1>
+    <div ng-repeat="panel in [test.panel]">
+        <div class="formSection flexLayout flexJustifyCenter" style="width: 40em;"
+             ng-repeat="component in [test.motion]"
+             ng-include="'../web/motion.html'"></div>
+    </div>
+
 </div>
 </body>
 </html>

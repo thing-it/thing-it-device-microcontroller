@@ -50,8 +50,8 @@ The Pixel Actor only works with Arduino as Microcontroller and requires a custom
 ## Sensors
 
 #### Light Sensor
-**Note: Light sensor uses i2c interface.
-For Microcontroller Typ: Raspberry PI this must be activated first via sudo raspi-config -> interfaces**
+**Note:** Light sensor uses i2c interface.
+For Microcontroller Typ: Raspberry PI this must be activated first via sudo raspi-config -> interfaces
 
 
 **Connection:**
@@ -64,14 +64,15 @@ For Microcontroller Typ: Raspberry PI this must be activated first via sudo rasp
 | 3 (SDA)|SDA|
 
 
-#### Light Sensor
-**Note: Light sensor uses i2c interface.
-For Microcontroller Typ: Raspberry PI this must be activated first via sudo raspi-config -> interfaces**
+#### Air Quality Sensor
+**Note:** AirQuality sensor uses i2c interface.
+ AirQuality sensor uses i2c interface.
+For Microcontroller Typ: Raspberry PI this must be activated first via sudo raspi-config -> interfaces
 
 
 **Connection:**
 
-| Raspberry Pi pin (function)  |  TSL2564/BH1750|
+| Raspberry Pi pin (function)  |  AirQuality|
 |---|---|
 | 6/9/14/20/25/30/34 (GND)|GND|
 | 1/17 (3.3V)  |VCC|

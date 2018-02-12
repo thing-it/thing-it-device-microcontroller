@@ -66,7 +66,6 @@ For Microcontroller Typ: Raspberry PI this must be activated first via sudo rasp
 
 #### Air Quality Sensor
 **Note:** AirQuality sensor uses i2c interface.
- AirQuality sensor uses i2c interface.
 For Microcontroller Typ: Raspberry PI this must be activated first via sudo raspi-config -> interfaces
 
 

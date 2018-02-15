@@ -51,8 +51,8 @@ module.exports = {
             defaultValue: 240,
             unit: "s"
         }, {
-            label: "Tick count Time",
-            id: "tickCountTime",
+            label: "Tick count Average Time",
+            id: "tickCountAverageTime",
             type: {
                 id: "integer"
             },
@@ -95,69 +95,55 @@ function Motion() {
 
                 this.lastTicks = [];
 
-
                 this.motion.on("motionstart", () => {
                     this.lastTicks.unshift(Date.now());
-
                     this.state.lastMotionTimestamp = moment().toISOString();
+
+                    if (!this.tickUpdateIntervalStatus) {
+                        this.tickUpdateIntervalStatus = true;
+                        this.tickUpdateInterval = setInterval(function () {
+                            udateTicksOverTime(this.lastTicks, this.configuration.tickCountAverageTime, function (newTickArrayLength) {
+                                if (this.state.ticksPerMinute !== parseInt(newTickArrayLength.toFixed(0))) {
+                                    this.state.ticksPerMinute = parseInt(newTickArrayLength.toFixed(0));
+                                    this.publishStateChange();
+                                    this.logDebug("New Tick Value: " + this.state.ticksPerMinute + " p.M. within a average over " + this.configuration.tickCountAverageTime + " Minutes");
+                                }
+                                if (newTickArrayLength === 0) {
+                                    clearInterval(this.tickUpdateInterval);
+                                    this.tickUpdateIntervalStatus = false;
+                                }
+
+                            }.bind(this));
+                        }.bind(this), 1000);
+                    }
 
                     if (this.state.occupied === false) {
                         this.state.occupied = true;
-                        // this.publishStateChange();
-                        this.publishEvent('motionDetected', {});
-
-                        this.tickUpdateInterval = setInterval(function () {
-                            getTicksOverTime(this);
-                            this.publishStateChange();
-
-                            console.log("inside interval state ", this.state);
-
-                        }.bind(this), 5000);
-
-                    } else {
-                        getTicksOverTime(this);
-
-                        console.log("inside tic state ", this.state);
-
                         this.publishStateChange();
+                        this.publishEvent('motionDetected', {});
+                    } else {
                         this.publishEvent('tic', {});
-
-
                     }
 
-                    //----------------------------------------
                     this.logDebug("\x1b[36mMotion detected\x1b[0m and Timer reset");
+
                     clearTimeout(this.timer);
 
                     this.timer = setTimeout(function () {
                         this.state.occupied = false;
                         this.publishStateChange();
-
                         this.publishEvent('noMoreMotion', {});
                         this.logDebug("Release Time Over");
                     }.bind(this), this.configuration.releaseTime * 1000)
                 });
 
 
-                function getTicksOverTime(original) {
-
+                function udateTicksOverTime(tickArray, tickCountTimeMinutes, callback) {
                     let timestamp = Date.now();
-                    while ((timestamp - original.lastTicks[original.lastTicks.length - 1]) > (original.configuration.tickCountTime * 60000)) {
-                        original.lastTicks.pop();
+                    while ((timestamp - tickArray[tickArray.length - 1]) > (tickCountTimeMinutes * 60000)) {
+                        tickArray.pop();
                     }
-                    // console.log("tickCountTimeMinutes " + original.configuration.tickCountTime);
-
-
-                    let currentTicks = original.lastTicks.length / original.configuration.tickCountTime;
-
-                    if (original.state.lastTicksticksPerMinute !== currentTicks.toFixed(0)) {
-                        // console.log(original);
-                        original.state.ticksPerMinute = parseInt(currentTicks.toFixed(0));
-                        original.logDebug("New tick calculation: " + original.state.ticksPerMinute);
-                    }
-                    if (original.lastTicks.length === 0) {
-                        clearInterval(original.tickUpdateInterval);
-                    }
+                    callback(tickArray.length / tickCountTimeMinutes);
                 }
 
 

@@ -9,6 +9,9 @@ module.exports = {
             id: "motionDetected",
             label: "Motion detected"
         }, {
+            id: "tic",
+            label: "Motion Tic"
+        }, {
             id: "noMoreMotion",
             label: "No more Motion"
         }],
@@ -84,69 +87,78 @@ function Motion() {
                     controller: "HCSR501", //TODO Make Configurable
                     pin: this.configuration.pin
                 });
-                //
-                // this.state = {
-                //     motion: false,
-                //     ticksPerMinute: 0
-                // };
 
                 this.state = {
                     occupied: false,
                     ticksPerMinute: 0
                 };
 
+                this.lastTicks = [];
 
-                let self = this;
-                let lastTicks = [];
 
-                this.motion.on("motionstart", function () {
-                    lastTicks.unshift(Date.now());
+                this.motion.on("motionstart", () => {
+                    this.lastTicks.unshift(Date.now());
+
                     this.state.lastMotionTimestamp = moment().toISOString();
 
-
                     if (this.state.occupied === false) {
-
                         this.state.occupied = true;
-                        this.publishStateChange();
+                        // this.publishStateChange();
+                        this.publishEvent('motionDetected', {});
 
-                        this.publishEvent('motionDetected', {
-                            occupied: this.state.occupied,
-                            ticksPerMinute: this.state.ticksPerMinute
-                        });
+                        this.tickUpdateInterval = setInterval(function () {
+                            getTicksOverTime(this);
+                            this.publishStateChange();
+
+                            console.log("inside interval state ", this.state);
+
+                        }.bind(this), 5000);
 
                     } else {
-                        self.publishEvent('tic', {
-                                occupied: this.state.occupied,
-                                ticksPerMinute: this.state.ticksPerMinute
-                            }
-                        );
+                        getTicksOverTime(this);
+
+                        console.log("inside tic state ", this.state);
+
+                        this.publishStateChange();
+                        this.publishEvent('tic', {});
+
 
                     }
 
+                    //----------------------------------------
                     this.logDebug("\x1b[36mMotion detected\x1b[0m and Timer reset");
-
                     clearTimeout(this.timer);
 
                     this.timer = setTimeout(function () {
                         this.state.occupied = false;
                         this.publishStateChange();
-                        this.publishEvent('noMoreMotion', {
-                            occupied: this.state.motion,
-                            ticksPerMinute: this.state.ticksPerMinute
-                        });
+
+                        this.publishEvent('noMoreMotion', {});
                         this.logDebug("Release Time Over");
                     }.bind(this), this.configuration.releaseTime * 1000)
-                }.bind(this));
+                });
 
 
-                this.tickInterval = setInterval(function () {
+                function getTicksOverTime(original) {
+
                     let timestamp = Date.now();
-                    while ((timestamp - lastTicks[lastTicks.length - 1]) > (this.configuration.tickCountTime * 60000)) {
-                        lastTicks.pop();
+                    while ((timestamp - original.lastTicks[original.lastTicks.length - 1]) > (original.configuration.tickCountTime * 60000)) {
+                        original.lastTicks.pop();
                     }
-                    this.state.ticksPerMinute = (lastTicks.length / this.configuration.tickCountTime).toFixed();
-                    this.publishStateChange();
-                }.bind(this), 5000);
+                    // console.log("tickCountTimeMinutes " + original.configuration.tickCountTime);
+
+
+                    let currentTicks = original.lastTicks.length / original.configuration.tickCountTime;
+
+                    if (original.state.lastTicksticksPerMinute !== currentTicks.toFixed(0)) {
+                        // console.log(original);
+                        original.state.ticksPerMinute = parseInt(currentTicks.toFixed(0));
+                        original.logDebug("New tick calculation: " + original.state.ticksPerMinute);
+                    }
+                    if (original.lastTicks.length === 0) {
+                        clearInterval(original.tickUpdateInterval);
+                    }
+                }
 
 
             }
@@ -164,6 +176,7 @@ function Motion() {
 
     Motion.prototype.stop = function () {
         clearTimeout(this.timer);
-        clearInterval(this.tickInterval);
+        clearInterval(this.tickUpdateInterval);
     };
 };
+

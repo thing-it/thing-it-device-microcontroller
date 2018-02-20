@@ -112,7 +112,6 @@ function Motion() {
                                     clearInterval(this.tickUpdateInterval);
                                     this.tickUpdateIntervalStatus = false;
                                 }
-
                             }.bind(this));
                         }.bind(this), 1000);
                     }

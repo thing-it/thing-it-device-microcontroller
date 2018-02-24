@@ -16,7 +16,7 @@ module.exports = {
             id: "luminance",
             label: "Luminance",
             type: {
-                id: "number"
+                id: "integer"
             },
         }],
         configuration: [{
@@ -93,6 +93,12 @@ function LightSensor() {
 
                 var self = this;
 
+                this.updateInterval = setInterval(function () {
+                    if (this.state.luminance === 0) {
+                        this.state.luminance += 0.01;
+                    }
+                    this.publishStateChange();
+                }.bind(this), 60000);
 
                 this.lightSensor.on("data", function (data) {
                     value.push(data.lux);
@@ -144,5 +150,11 @@ function LightSensor() {
      */
     LightSensor.prototype.getState = function () {
         return this.state;
+    };
+    /**
+     *
+     */
+    LightSensor.prototype.stop = function () {
+        clearInterval(this.updateInterval);
     };
 }

@@ -27,7 +27,7 @@ module.exports = {
             typ: {
                 id: "integer"
             },
-            defaultValue: 1,
+            defaultValue: 5,
         }]
     },
     create: function () {
@@ -47,30 +47,32 @@ function RoomLight() {
     RoomLight.prototype.start = function () {
         var deferred = q.defer();
 
-        // this.state = {
-        //     light: "off",
-        //     brightness: 0
-        // };
+        this.logLevel = "debug";
+
+        this.state = {
+            switch: false,
+            brightness: 50
+        };
 
         if (!this.isSimulated()) {
             try {
                 var five = require("johnny-five");
 
                 this.light1 = new five.Led({
-                    pin: 12,
-                    controller: this.configuration.controller,
+                    pin: 12,//TODO DEMOCASE
+                    controller: "PCA9685",
                     isAnode: true
                 });
 
                 this.light2 = new five.Led({
-                    pin: 13,
-                    controller: this.configuration.controller,
+                    pin: 13,//TODO DEMOCASE
+                    controller: "PCA9685",
                     isAnode: true
                 });
 
                 this.light3 = new five.Led({
-                    pin: 14,
-                    controller: this.configuration.controller,
+                    pin: 14,//TODO DEMOCASE
+                    controller: "PCA9685",
                     isAnode: true
                 });
 
@@ -91,6 +93,60 @@ function RoomLight() {
                     isPullup: true,
                 });
 
+                console.log("hier");
+                var waveform = '';
+                var waveformTimeout;
+
+                this.upButton.on('up', function () {
+                    waveform += '1';
+                    handleWaveform();
+                });
+
+                this.downButton.on('up', function () {
+                    waveform += '0';
+                    handleWaveform();
+                });
+
+                this.pressButton.on('down', function () {
+                    this.state.switch = !this.state.switch;
+                    this.setState(this.state);
+
+                }.bind(this));
+
+                var self = this;
+
+                function handleWaveform() {
+                    if (waveform.length < 2) {
+                        waveformTimeout = setTimeout(function () {
+                            waveform = '';
+                        }, 8);
+                        return;
+                    }
+
+                    if (waveformTimeout) {
+                        clearTimeout(waveformTimeout);
+                    }
+
+                    if (waveform === '01') {
+                        self.state.brightness = (self.state.brightness + self.configuration.encoderSensitivity);
+
+                        if (self.state.brightness > 100) {
+                            self.state.brightness = 100
+                        }
+                        self.setState(self.state);
+
+                    } else if (waveform === '10') {
+                        self.state.brightness = (self.state.brightness - self.configuration.encoderSensitivity);
+
+                        if (self.state.brightness < 0) {
+                            self.state.brightness = 0;
+                        }
+
+                        self.setState(self.state);
+                    }
+
+                    waveform = '';
+                }
 
                 this.setState(this.state);
                 this.logDebug("Room Light initialized.");
@@ -123,6 +179,8 @@ function RoomLight() {
      */
     RoomLight.prototype.setState = function (targetstate) {
 
+        this.logDebug("setState ", targetstate);
+
         if (this.isSimulated()) {
             this.state = targetstate;
             this.publishStateChange();
@@ -133,29 +191,22 @@ function RoomLight() {
             let byteBrightness = (targetstate.brightness * 2.55).toFixed();
 
             if (byteBrightness > 255) {
-                byteBrightness = 255
+                byteBrightness = 255;
             }
 
             if (this.state.switch) {
-                this.led1.brightness(byteBrightness);
-                this.led1.on();
-
-                this.led2.brightness(byteBrightness);
-                this.led2.on();
-
-                this.led3.brightness(byteBrightness);
-                this.led3.on();
-
+                this.light1.brightness(byteBrightness);
+                this.light2.brightness(byteBrightness);
+                this.light3.brightness(byteBrightness);
             } else {
-                this.led1.brightness(byteBrightness);
-                this.led1.stop().off();
-
-                this.led2.brightness(byteBrightness);
-                this.led2.stop().off();
-
-                this.led3.brightness(byteBrightness);
-                this.led3.stop().off();
+                this.light1.brightness(byteBrightness);
+                this.light1.stop().off();
+                this.light2.brightness(byteBrightness);
+                this.light2.stop().off();
+                this.light3.brightness(byteBrightness);
+                this.light3.stop().off();
             }
+
             this.publishStateChange();
         }
     };
@@ -168,15 +219,15 @@ function RoomLight() {
         try {
             if (this.state.switch === false) {
                 this.state.switch = true;
-                this.led1.on();
-                this.led2.on();
-                this.led3.on();
+                this.light1.on();
+                this.light2.on();
+                this.light3.on();
 
             } else {
                 this.state.switch = false;
-                this.led1.stop().off();
-                this.led2.stop().off();
-                this.led3.stop().off();
+                this.light1.stop().off();
+                this.light2.stop().off();
+                this.light3.stop().off();
             }
 
             this.publishStateChange();

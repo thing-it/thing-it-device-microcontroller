@@ -85,7 +85,7 @@ function Encoder() {
                 });
 
                 var pressButton = new five.Button({
-                    pin: 16,//TODO DEMOCASE Make this configurable.
+                    pin: 16,//TODO Make this configurable.
                     type: "digital",
                     isPullup: true,
                 });

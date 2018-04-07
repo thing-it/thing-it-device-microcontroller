@@ -74,12 +74,26 @@ function RoomLight() {
                     isAnode: true
                 });
 
+                this.upButton = new five.Button({
+                    pin: 2, //TODO DEMOCASE
+                    isPullup: true,
+                });
 
+                this.downButton = new five.Button({
+                    pin: 17,//TODO DEMOCASE
+                    type: "digital",
+                    isPullup: true,
+                });
 
+                this.pressButton = new five.Button({
+                    pin: 16,//TODO DEMOCASE
+                    type: "digital",
+                    isPullup: true,
+                });
 
 
                 this.setState(this.state);
-                this.logDebug("LED initialized.");
+                this.logDebug("Room Light initialized.");
 
                 deferred.resolve();
             } catch (error) {
@@ -107,89 +121,65 @@ function RoomLight() {
     /**
      *
      */
-    RoomLight.prototype.setState = function (state) {
-        this.state.light = state.light;
+    RoomLight.prototype.setState = function (targetstate) {
 
-        // if (this.led) {
-        //     if (this.state.light === "blink") {
-        //         this.led.blink();
-        //         this.led.brightness(this.state.brightness);
-        //     } else if (this.state.light === "on") {
-        //         this.led.stop();
-        //         this.led.on();
-        //         this.led.brightness(this.state.brightness);
-        //
-        //     } else {
-        //         this.led.stop().off();
-        //     }
-        // }
-    };
+        if (this.isSimulated()) {
+            this.state = targetstate;
+            this.publishStateChange();
 
-    /**
-     *
-     */
-    RoomLight.prototype.on = function () {
+        } else {
 
-        try {
-            if (this.led) {
-                this.led.stop();
-                this.led.on();
+            this.state = targetstate;
+            let byteBrightness = (targetstate.brightness * 2.55).toFixed();
+
+            if (byteBrightness > 255) {
+                byteBrightness = 255
             }
 
-            this.state.light = "on";
+            if (this.state.switch) {
+                this.led1.brightness(byteBrightness);
+                this.led1.on();
 
-            this.publishStateChange();
-        }
-        catch (err) {
-            this.logDebug("########### Error in Microcontroller Actor. For safty reasons TIN is shutting down ###########");
-            //process.exit();
-        }
-    };
+                this.led2.brightness(byteBrightness);
+                this.led2.on();
 
-    /**
-     *
-     */
-    RoomLight.prototype.off = function () {
+                this.led3.brightness(byteBrightness);
+                this.led3.on();
 
-        try {
-
-            if (this.led) {
-                this.led.stop().off();
-            }
-
-            this.state.light = "off";
-
-            this.publishStateChange();
-        }
-        catch (err) {
-            this.logDebug("########### Error in Microcontroller Actor. For safty reasons TIN is shutting down ###########");
-            //process.exit();
-        }
-    };
-
-    /**
-     *
-     */
-    RoomLight.prototype.toggle = function () {
-
-        try {
-            if (this.state.light == "off") {
-                this.state.light = "on";
-
-                if (this.led) {
-                    this.led.stop();
-                    this.led.on();
-                }
             } else {
-                this.state.light = "off";
+                this.led1.brightness(byteBrightness);
+                this.led1.stop().off();
 
-                if (this.led) {
-                    this.led.stop().off();
-                }
+                this.led2.brightness(byteBrightness);
+                this.led2.stop().off();
+
+                this.led3.brightness(byteBrightness);
+                this.led3.stop().off();
+            }
+            this.publishStateChange();
+        }
+    };
+
+    /**
+     *
+     */
+    RoomLight.prototype.toggleLight = function () {
+
+        try {
+            if (this.state.switch === false) {
+                this.state.switch = true;
+                this.led1.on();
+                this.led2.on();
+                this.led3.on();
+
+            } else {
+                this.state.switch = false;
+                this.led1.stop().off();
+                this.led2.stop().off();
+                this.led3.stop().off();
             }
 
             this.publishStateChange();
-
         }
         catch (err) {
             this.logDebug("########### Error in Microcontroller Actor. For safty reasons TIN is shutting down ###########");
@@ -197,32 +187,4 @@ function RoomLight() {
         }
     };
 
-    /**
-     *
-     */
-
-    /**
-     *
-     */
-    Led.prototype.brightness = function (parameters) {
-
-        try {
-            if (this.led) {
-                this.state.brightness = parameters.brightness;
-                this.led.brightness(parameters.brightness);
-            }
-
-            this.state.light = "on";
-
-            this.publishStateChange();
-
-        }
-        catch (err) {
-            this.logDebug("########### Error in Microcontroller Actor. For safty reasons TIN is shutting down ###########");
-            //process.exit();
-        }
-
-
-    }
-}
-;
+};

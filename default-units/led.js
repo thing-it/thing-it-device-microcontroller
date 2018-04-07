@@ -129,6 +129,7 @@ function Led() {
                     isAnode: this.configuration.inverted
                 });
 
+                this.setState(this.state);
                 this.logDebug("LED initialized.");
 
                 deferred.resolve();

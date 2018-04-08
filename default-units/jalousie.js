@@ -6,12 +6,9 @@ module.exports = {
         family: "jalousie",
         deviceTypes: ["microcontroller/microcontroller"],
         services: [
-            {id: "lowerPosition", label: "Lower Position"},
-            {id: "raisePosition", label: "Raise Position"},
-            {id: "positionUp", label: "Position Up"},
-            {id: "positionDown", label: "Position Down"},
-            {id: "decrementRotation", label: "Decrement Rotation"},
-            {id: "incrementRotation", label: "Increment Rotation"},
+            {id: "setState", label: "Set State"},
+            {id: "up", label: "Up"},
+            {id: "down", label: "Down"},
             {id: "stopMotion", label: "Stop Motion"}
         ],
         state: [
@@ -28,13 +25,27 @@ module.exports = {
             }],
         configuration: [
             {
-            label: "LED intensitiy",
-            id: "ledIntensity",
-            type: {
-                id: "integer"
-            },
-            defaultValue: 255
-        }]
+                label: "LED intensitiy",
+                id: "ledIntensity",
+                type: {
+                    id: "integer"
+                },
+                defaultValue: 255
+            }, {
+                label: "Speed",
+                id: "speed",
+                type: {
+                    id: "integer"
+                },
+                defaultValue: 500
+            }, {
+                label: "Daylight color code",
+                id: "dayLightColorCode",
+                type: {
+                    id: "string"
+                },
+                defaultValue: "#ffe800"
+            }]
     },
     create: function () {
         return new Jalousie();
@@ -51,110 +62,59 @@ function Jalousie() {
      *
      */
     Jalousie.prototype.start = function () {
-        var promise;
+        var deferred = q.defer();
 
 
-        if (this.isSimulated()) {
-            promise = q();
+        this.logLevel = 'debug';
 
-            this.state = {
-                rotation: 110,
-                position: 30
-            };
+        this.dayLight = tinycolor("red");
+        this.blindLight = tinycolor("red");
 
-        } else {
-            this.state = {};
-            this.internalListeners = [];
-            this.logDebug("Starting in non-simulated mode");
-            this.logDebug("Subscribing to COVs for position and rotation");
 
-            var intermediatePromise = q();
+        if (!this.isSimulated()) {
 
-            if (this.device.state.initialized === false) {
-                this.logDebug('BACnet device not initialized, yet. Waiting 3s.');
-                intermediatePromise = intermediatePromise.delay(3000).then(function () {
-                    this.logDebug('Waited for initialization.');
-                    this.logDebug('Initialized: ' + this.device.state.initialized);
+            try {
+                var pixel = require("node-pixel");
+
+                this.strip = new pixel.Strip({
+                    board: this.device.board,
+                    controller: "FIRMATA",
+                    strips: [{
+                        pin: 5, //TODO DEMOCASE
+                        length: (24) //TODO DEMOCASE
+                    },],
+                    gamma: 2.8, // set to a gamma that works nicely for WS2812
+                });
+
+                this.strip.on("ready", function () {
+                    this.strip.color("#000000");
+                    this.showPixel();
+                    this.state = {
+                        position: 100
+                    };
+
+                    this.logDebug("Jalousie initialized.");
+                    this.publishStateChange();
+
                 }.bind(this));
+
+
+                deferred.resolve();
+
+
+            } catch (error) {
+                this.device.node
+                    .publishMessage("Cannot initialize " +
+                        this.device.id + "/" + this.id +
+                        ":" + error);
+
+                deferred.reject(error);
             }
-
-            promise = intermediatePromise.then(function () {
-                promise = q.all([
-                    this.device.adapter.subscribeCOV(this.configuration.positionFeedbackObjectType,
-                        this.configuration.positionFeedbackObjectId, this.device.bacNetDevice, function (notification) {
-                            this.logDebug('Received position feedback notification.');
-                            this.state.position = notification.propertyValue;
-                            this.logDebug("Position: " + this.state.position);
-                            this.logDebug("State", this.state);
-
-                            function notifyListeners(element, index, array) {
-                                element(index);
-                            }
-
-                            this.internalListeners.forEach(notifyListeners);
-
-                            this.publishStateChange();
-                        }.bind(this)),
-                    this.device.adapter.subscribeCOV(this.configuration.rotationFeedbackObjectType,
-                        this.configuration.rotationFeedbackObjectId, this.device.bacNetDevice, function (notification) {
-                            this.logDebug('Received rotation notification.');
-                            this.state.rotation = notification.propertyValue;
-                            this.logDebug("Rotation: " + this.state.rotation);
-                            this.logDebug("State", this.state);
-                            this.publishStateChange();
-                        }.bind(this))])
-                    .then(function (result) {
-                        this.logDebug('Successfully subscribed to COVs.');
-                        this.isSubscribed = true;
-                    }.bind(this))
-                    .fail(function (result) {
-                        var errorMessage = 'Could not subscribe to COVs of object ' +
-                            this.configuration.setpointFeedbackObjectId + ': ' + result;
-                        this.logError(errorMessage);
-                        throw new Error(errorMessage);
-                    }.bind(this));
-            }.bind(this));
+        } else {
+            deferred.resolve();
         }
 
-
-        return promise;
-    };
-
-    /**
-     *
-     */
-    Jalousie.prototype.stop = function () {
-        var promise;
-
-        if (this.isSimulated()) {
-            if (this.simulationInterval) {
-                clearInterval(this.simulationInterval);
-            }
-
-            promise = q();
-        } else {
-            this.logDebug("Attempting to un-subscribe from updates.");
-
-            promise = q.all([
-                this.device.adapter.unsubscribeCOV(this.configuration.positionFeedbackObjectType, this.configuration.positionFeedbackObjectId,
-                    this.device.bacNetDevice, function (notification) {
-                    }.bind(this)),
-                this.device.adapter.unsubscribeCOV(this.configuration.rotationFeedbackObjectType, this.configuration.rotationFeedbackObjectId,
-                    this.device.bacNetDevice, function (notification) {
-                    }.bind(this))])
-                .then(function (result) {
-                    this.logDebug('Successfully un-subscribed from COVs.');
-                    this.isSubscribed = true;
-                }.bind(this))
-                .fail(function (result) {
-                    var errorMessage = 'Could not un-subscribe from all COV objects: ' +
-                        this.configuration.setpointFeedbackObjectId + ': ' + result;
-                    this.logError(errorMessage);
-                    throw new Error(errorMessage);
-                }.bind(this));
-        }
-
-        return promise;
+        return deferred.promise;
     };
 
     /**
@@ -167,174 +127,112 @@ function Jalousie() {
     /**
      *
      */
-    Jalousie.prototype.setState = function (targetstate) {
-        var promise;
-        this.logDebug('Received set state.', targetstate);
-
-        if (this.isSimulated()) {
-            promise = q();
-            this.state = targetstate;
-            this.publishStateChange();
-        } else {
-            promise = this.setModification(targetstate.position, targetstate.rotation);
+    Jalousie.prototype.setState = function (state) {
+        if (this.state.position < state.position) {
+            this.down(state);
         }
 
-        return promise;
-    };
-
-
-    /**
-     *
-     */
-    Jalousie.prototype.setModification = function (position, rotation) {
-        this.logDebug('Modifying position and rotation', position, rotation);
-        return q.all([
-            this.device.adapter.writeProperty(this.configuration.positionModificationObjectType,
-                this.configuration.positionModificationObjectId, 'presentValue', position, this.device.bacNetDevice)
-                .then(function (result) {
-                    this.logDebug('Modified Position', position, result);
-                }.bind(this)),
-            this.device.adapter.writeProperty(this.configuration.rotationModificationObjectType,
-                this.configuration.rotationModificationObjectId, 'presentValue', rotation, this.device.bacNetDevice)
-                .then(function (result) {
-                    this.logDebug('Modified Rotation', rotation, result);
-                }.bind(this))])
-            .then(function () {
-                return this.device.adapter.writeProperty(this.configuration.actionObjectType,
-                    this.configuration.actionObjectId, 'presentValue', this.configuration.actionGoValue, this.device.bacNetDevice)
-                    .then(function (result) {
-                        this.logDebug('Modified Action', this.configuration.actionGoValue, result);
-                    }.bind(this));
-            }.bind(this));
-    };
-
-
-    /**
-     *
-     */
-    Jalousie.prototype.raisePosition = function () {
-        var promise;
-
-        if (this.isSimulated()) {
-            promise = q();
-            this.state.position = (this.state.position < this.configuration.positionStepSize ?
-                0 : this.state.position - this.configuration.positionStepSize);
-            this.publishStateChange();
-        } else {
-            var targetPosition = this.state.position - this.configuration.positionStepSize;
-            this.logDebug("Target Position", targetPosition);
-            promise = this.setModification(targetPosition, this.configuration.rotationUpValue);
+        if (this.state.position > state.position) {
+            this.up(state);
         }
 
-        return promise;
     };
 
     /**
      *
      */
-    Jalousie.prototype.lowerPosition = function () {
-        var promise;
+    Jalousie.prototype.showPixel = function (parameters) {
 
-        if (this.isSimulated()) {
-            promise = q();
-            this.state.position = (this.state.position > (100 - this.configuration.positionStepSize) ?
-                100 : this.state.position + this.configuration.positionStepSize);
+        if (!this.isSimulated()) {
+            let pixelToShow = (this.state.position / 12.5).toFixed();
+            for (let i = 23; i >= 16; i--) {
+                if (i <= (23 - pixelToShow)) {
+                    console.log("for if");
+                    this.strip.pixel(i).color(this.configuration.dayLightColorCode);
+                    this.strip.pixel((i - 8)).color(this.configuration.dayLightColorCode);
+                    this.strip.pixel((i - 16)).color(this.configuration.dayLightColorCode);
+                } else {
+                    this.strip.pixel(i).color("#000000");
+                    this.strip.pixel(i - 8).color("#000000");
+                    this.strip.pixel(i - 16).color("#000000");
+                }
+            }
+            this.strip.show();
             this.publishStateChange();
-        } else {
-            var targetPosition = this.state.position + this.configuration.positionStepSize;
-            this.logDebug("Target Position", targetPosition);
-            promise = this.setModification(targetPosition, this.configuration.rotationDownValue);
         }
-
-        return promise;
     };
 
     /**
      *
      */
-    Jalousie.prototype.positionUp = function () {
-        var promise;
+    Jalousie.prototype.up = function (pretarget) {
+        this.stopMotion();
 
-        if (this.isSimulated()) {
-            promise = q();
-            this.state.position = 0;
-            this.publishStateChange();
+        this.logDebug("Jalousie Moving up");
+        let target = {};
+        if (typeof pretarget === "undefined") {
+            target = {position: 0}
         } else {
-            promise = this.setModification(0, this.configuration.rotationUpValue);
+            target = pretarget;
         }
 
-        return promise;
+        this.upInterval = setInterval(function () {
+            this.state.position -= 12.5;
+            this.showPixel();
+
+            if (this.state.position <= target.position) {
+                clearInterval(this.upInterval);
+            }
+
+        }.bind(this), this.configuration.speed);
     };
 
     /**
      *
      */
-    Jalousie.prototype.positionDown = function () {
-        var promise;
+    Jalousie.prototype.down = function (pretarget) {
+        this.stopMotion();
 
-        if (this.isSimulated()) {
-            promise = q();
-            this.state.position = 100;
-            this.publishStateChange();
+        this.logDebug("Jalousie Moving down");
+
+        let target = {};
+        if (typeof pretarget === "undefined") {
+            target = {position: 100}
         } else {
-            promise = this.setModification(100, this.configuration.rotationDownValue);
+            target = pretarget;
         }
 
-        return promise;
-    };
+        this.downInterval = setInterval(function () {
+            this.state.position += 12.5;
+            this.showPixel();
 
-    /**
-     *
-     */
-    Jalousie.prototype.incrementRotation = function () {
-        var promise;
+            if (this.state.position >= target.position) {
+                clearInterval(this.downInterval);
+            }
 
-        if (this.isSimulated()) {
-            promise = q();
-            this.state.rotation = (this.state.rotation > 160 ? 170 : this.state.rotation + 10);
-            this.publishStateChange();
-        } else {
-            var targetRotation = this.state.rotation + this.configuration.rotationStepSize;
-            this.logDebug("Target Rotation", targetRotation);
-            promise = this.setModification(this.state.position, targetRotation);
-        }
-
-        return promise;
-    };
-
-    /**
-     *
-     */
-    Jalousie.prototype.decrementRotation = function () {
-        var promise;
-
-        if (this.isSimulated()) {
-            promise = q();
-            this.state.rotation = (this.state.rotation < 100 ? 90 : this.state.rotation - 10);
-            this.publishStateChange();
-        } else {
-            var targetRotation = this.state.rotation - this.configuration.rotationStepSize;
-            this.logDebug("Target Rotation", targetRotation);
-            promise = this.setModification(this.state.position, targetRotation);
-        }
-
-        return promise;
+        }.bind(this), this.configuration.speed);
     };
 
     /**
      *
      */
     Jalousie.prototype.stopMotion = function () {
-        var promise;
+        if (this.upInterval) {
+            clearInterval(this.upInterval);
+        }
 
-        promise = this.device.adapter.writeProperty(this.configuration.actionObjectType,
-            this.configuration.actionObjectId, 'presentValue', this.configuration.actionStopValue, this.device.bacNetDevice)
-            .then(function (result) {
-                this.logDebug('Stopped motion', result);
-            }.bind(this));
-
-        return promise;
+        if (this.downInterval) {
+            clearInterval(this.downInterval);
+        }
     };
 
+    /**
+     *
+     */
+    Jalousie.prototype.stop = function () {
+        this.stopMotion();
+        return this.state;
+    };
 
 }
+

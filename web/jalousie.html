@@ -1,4 +1,4 @@
-<ti-jalousie state="component._state" up="panel.callActorService(component, 'positionUp', null)"
+<ti-jalousie state="component._state" change="portal.callActorService(component, 'setState', component._state)"
+             up="portal.callActorService(component, 'up', null)"
              stop="panel.callActorService(component, 'stopMotion', null)"
-             down="panel.callActorService(component, 'positionDown', null)"
-             change="panel.callActorService(component, 'setState', component._state)"></ti-jalousie>
+             down="portal.callActorService(component, 'down', null)"></ti-jalousie>

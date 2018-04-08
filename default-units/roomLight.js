@@ -7,7 +7,7 @@ module.exports = {
         deviceTypes: ["microcontroller/microcontroller"],
         services: [
             {id: "toggleLight", label: "Toggle Light"},
-            {id: "changeDimmer", label: "Change Dimmer"},
+            {id: "setState", label: "Set State"},
         ],
         state: [
             {
@@ -127,7 +127,7 @@ function RoomLight() {
                         clearTimeout(waveformTimeout);
                     }
 
-                    if (waveform === '01') {
+                    if (waveform === '10') {
                         self.state.brightness = (self.state.brightness + self.configuration.encoderSensitivity);
 
                         if (self.state.brightness > 100) {
@@ -135,7 +135,7 @@ function RoomLight() {
                         }
                         self.setState(self.state);
 
-                    } else if (waveform === '10') {
+                    } else if (waveform === '01') {
                         self.state.brightness = (self.state.brightness - self.configuration.encoderSensitivity);
 
                         if (self.state.brightness < 0) {
@@ -199,11 +199,11 @@ function RoomLight() {
                 this.light2.brightness(byteBrightness);
                 this.light3.brightness(byteBrightness);
             } else {
-                this.light1.brightness(byteBrightness);
+                //this.light1.brightness(byteBrightness);
                 this.light1.stop().off();
-                this.light2.brightness(byteBrightness);
+                //this.light2.brightness(byteBrightness);
                 this.light2.stop().off();
-                this.light3.brightness(byteBrightness);
+                //this.light3.brightness(byteBrightness);
                 this.light3.stop().off();
             }
 

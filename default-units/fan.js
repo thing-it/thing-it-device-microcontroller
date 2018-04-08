@@ -23,19 +23,6 @@ module.exports = {
             }, defaultValue: "125"
         }],
         configuration: [{
-            label: "Controller",
-            id: "controller",
-            type: {
-                family: "enumeration",
-                values: [{
-                    label: "DEFAULT",
-                    id: "DEFAULT"
-                }, {
-                    label: "PCA9685",
-                    id: "PCA9685"
-                }]
-            }
-        }, {
             label: "Pin",
             id: "pin",
             type: {

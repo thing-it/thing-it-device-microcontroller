@@ -8,6 +8,7 @@ module.exports = {
         services: [
             {id: "incrementSetpoint", label: "Increment Setpoint"},
             {id: "decrementSetpoint", label: "Decrement Setpoint"},
+            {id: "setState", label: "Set State"},
         ],
         state: [
             {

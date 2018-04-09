@@ -64,12 +64,11 @@ function Jalousie() {
     Jalousie.prototype.start = function () {
         var deferred = q.defer();
 
+        this.state = {
+            position: 100
+        };
 
         this.logLevel = 'debug';
-
-        this.dayLight = tinycolor("red");
-        this.blindLight = tinycolor("red");
-
 
         if (!this.isSimulated()) {
 
@@ -89,9 +88,7 @@ function Jalousie() {
                 this.strip.on("ready", function () {
                     this.strip.color("#000000");
                     this.showPixel();
-                    this.state = {
-                        position: 100
-                    };
+
 
                     this.logDebug("Jalousie initialized.");
                     this.publishStateChange();
@@ -147,7 +144,6 @@ function Jalousie() {
             let pixelToShow = (this.state.position / 12.5).toFixed();
             for (let i = 23; i >= 16; i--) {
                 if (i <= (23 - pixelToShow)) {
-                    console.log("for if");
                     this.strip.pixel(i).color(this.configuration.dayLightColorCode);
                     this.strip.pixel((i - 8)).color(this.configuration.dayLightColorCode);
                     this.strip.pixel((i - 16)).color(this.configuration.dayLightColorCode);
@@ -172,7 +168,9 @@ function Jalousie() {
         let target = {};
         if (typeof pretarget === "undefined") {
             target = {position: 0}
+            console.log("hier");
         } else {
+            console.log("nein hier");
             target = pretarget;
         }
 

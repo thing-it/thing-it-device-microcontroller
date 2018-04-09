@@ -8,7 +8,6 @@ module.exports = {
         services: [
             {id: "incrementSetpoint", label: "Increment Setpoint"},
             {id: "decrementSetpoint", label: "Decrement Setpoint"},
-            {id: "setState", label: "Set State"},
         ],
         state: [
             {
@@ -87,7 +86,8 @@ function Thermostat() {
         var tempRangeMidpoint = (this.configuration.minimumSetpoint + this.configuration.maximumSetpoint) / 2;
 
         this.state = {
-            setpoint: tempRangeMidpoint
+            setpoint: tempRangeMidpoint,
+            temperature: 0
         };
 
         //this.logLevel = 'debug';
@@ -117,7 +117,7 @@ function Thermostat() {
 
             this.multi = new five.Multi({
                 controller: "BME280",
-                freq: 1000
+                freq: 200
             });
 
             this.lcd = new five.LCD({
@@ -159,6 +159,7 @@ function Thermostat() {
 
             //LCD Preperation
             this.lcd.clear();
+
             this.lcd.cursor(0, 0);
             this.lcd.print("Temperature: ");
             this.lcd.cursor(0, 16);

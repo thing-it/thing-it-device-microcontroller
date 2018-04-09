@@ -90,7 +90,9 @@ function Thermostat() {
             temperature: 0
         };
 
-        //this.logLevel = 'debug';
+        // console.log(this.state.setpoint);
+        //
+        // this.logLevel = 'debug';
 
         if (this.isSimulated()) {
             this.logDebug("Starting in simulated mode");
@@ -128,7 +130,6 @@ function Thermostat() {
 
             this.led1 = new five.Led.RGB({
                 controller: "PCA9685",
-
                 pins: {
                     red: 2,
                     green: 1,
@@ -138,7 +139,6 @@ function Thermostat() {
 
             this.led2 = new five.Led.RGB({
                 controller: "PCA9685",
-
                 pins: {
                     red: 3,
                     green: 4,
@@ -444,7 +444,7 @@ function Thermostat() {
 
             promise = deferred.promise;
         }
-        
+
         return promise;
     };
 

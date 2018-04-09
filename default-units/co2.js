@@ -72,9 +72,6 @@ function Co2() {
 
                     self.state.value = this.value;
 
-                    self.publishValueChangeEvent({
-                        value: this.value
-                    });
 
                     self.logDebug("Value: " + this.value);
 
@@ -84,9 +81,7 @@ function Co2() {
 
                     self.state.value = this.value;
 
-                    self.publishValueChangeEvent({
-                        value: this.value
-                    });
+
 
                     self.logDebug("Value: " + this.value);
 

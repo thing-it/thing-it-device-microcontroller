@@ -25,7 +25,7 @@ module.exports = {
             label: "Encoder sensitivity",
             id: "encoderSensitivity",
             typ: {
-                id: "integer"
+                id: "decimal"
             },
             defaultValue: 5,
         }]
@@ -93,7 +93,6 @@ function RoomLight() {
                     isPullup: true,
                 });
 
-                console.log("hier");
                 var waveform = '';
                 var waveformTimeout;
 
@@ -178,6 +177,8 @@ function RoomLight() {
      *
      */
     RoomLight.prototype.setState = function (targetstate) {
+        var promise;
+        var deferred = q.defer();
 
         this.logDebug("setState ", targetstate);
 
@@ -207,7 +208,17 @@ function RoomLight() {
                 this.light3.stop().off();
             }
 
+            console.log(this.state);
             this.publishStateChange();
+
+
+            deferred.resolve();
+
+            promise = deferred.promise;
+
+            return promise;
+
+
         }
     };
 

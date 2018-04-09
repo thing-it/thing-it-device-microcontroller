@@ -3,6 +3,7 @@ module.exports = {
         family: "microcontroller",
         superDevice: "microcontroller/microcontroller",
         plugin: "microcontroller",
+        tangible: true,
         label: "GPIO Microcontroller",
         connectionTypes: ["USB", "ZigBee", "Ethernet", "Wifi", "Built-in"],
         dataTypes: {

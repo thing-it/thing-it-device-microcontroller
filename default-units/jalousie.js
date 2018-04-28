@@ -65,7 +65,8 @@ function Jalousie() {
         var deferred = q.defer();
 
         this.state = {
-            position: 100
+            position: 100,
+            rotation: 90
         };
 
         this.logLevel = 'debug';
@@ -91,6 +92,7 @@ function Jalousie() {
 
 
                     this.logDebug("Jalousie initialized.");
+                    this.logDebug(this.state);
                     this.publishStateChange();
 
                 }.bind(this));
@@ -154,7 +156,7 @@ function Jalousie() {
                 }
             }
             this.strip.show();
-            this.publishStateChange();
+            //this.publishStateChange();
         }
     };
 
@@ -165,20 +167,19 @@ function Jalousie() {
         this.stopMotion();
 
         this.logDebug("Jalousie Moving up");
-        let target = {};
+        var target = {};
         if (typeof pretarget === "undefined") {
-            target = {position: 0}
-            console.log("hier");
+            target.position = 0;
         } else {
-            console.log("nein hier");
             target = pretarget;
         }
 
         this.upInterval = setInterval(function () {
             this.state.position -= 12.5;
+            this.publishStateChange();
             this.showPixel();
 
-            if (this.state.position <= target.position) {
+            if (this.state.position <= 0) {
                 clearInterval(this.upInterval);
             }
 
@@ -193,18 +194,22 @@ function Jalousie() {
 
         this.logDebug("Jalousie Moving down");
 
-        let target = {};
+        var target = {};
         if (typeof pretarget === "undefined") {
-            target = {position: 100}
+            target.position = 100;
         } else {
             target = pretarget;
         }
 
         this.downInterval = setInterval(function () {
             this.state.position += 12.5;
+            this.logDebug(this.state);
+            this.publishStateChange();
             this.showPixel();
 
-            if (this.state.position >= target.position) {
+            console.log("actual state " + this.state.position);
+
+            if (this.state.position >= 100) {
                 clearInterval(this.downInterval);
             }
 
@@ -222,6 +227,7 @@ function Jalousie() {
         if (this.downInterval) {
             clearInterval(this.downInterval);
         }
+
     };
 
     /**

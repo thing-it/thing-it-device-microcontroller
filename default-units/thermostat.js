@@ -65,6 +65,13 @@ module.exports = {
                     id: "integer"
                 },
                 defaultValue: 1
+            }, {
+                label: "Temperature Adjust",
+                id: "temperatureAdjust",
+                type: {
+                    id: "integer"
+                },
+                defaultValue: 5
             }
         ]
     },
@@ -119,7 +126,7 @@ function Thermostat() {
 
             this.multi = new five.Multi({
                 controller: "BME280",
-                freq: 200
+                freq: 3000
             });
 
             this.lcd = new five.LCD({
@@ -357,7 +364,7 @@ function Thermostat() {
 
             promise = deferred.promise;
 
-            this.state.temperature = this.state.liveTemperature;
+            this.state.temperature = (this.state.liveTemperature - this.configuration.temperatureAdjust);
 
             promise = q(this.state.temperature);
 

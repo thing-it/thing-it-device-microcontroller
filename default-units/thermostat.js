@@ -8,9 +8,16 @@ module.exports = {
         services: [
             {id: "incrementSetpoint", label: "Increment Setpoint"},
             {id: "decrementSetpoint", label: "Decrement Setpoint"},
+            {id: "windowOpen", label: "Window open"},
+            {id: "windowClosed", label: "Window closed"},
         ],
         state: [
             {
+                id: "openWindow", label: "Open window",
+                type: {
+                    id: "boolean"
+                }
+            }, {
                 id: "setpoint", label: "Setpoint",
                 type: {
                     id: "decimal"
@@ -383,20 +390,28 @@ function Thermostat() {
         var promise;
         var delta = this.state.setpoint - this.state.temperature;
 
-        if (Math.abs(delta) > this.configuration.tolerance) {
-            if (delta > 0) {
-                this.state.heatActive = true;
-                this.state.coolActive = false;
-                promise = this.setMode('HEAT');
-            } else {
-                this.state.heatActive = false;
-                this.state.coolActive = true;
-                promise = this.setMode('COOL');
-            }
-        } else {
+        if (this.state.openWindow) {
             this.state.heatActive = false;
             this.state.coolActive = false;
             promise = this.setMode('NEUTRAL');
+
+        } else {
+
+            if (Math.abs(delta) > this.configuration.tolerance) {
+                if (delta > 0) {
+                    this.state.heatActive = true;
+                    this.state.coolActive = false;
+                    promise = this.setMode('HEAT');
+                } else {
+                    this.state.heatActive = false;
+                    this.state.coolActive = true;
+                    promise = this.setMode('COOL');
+                }
+            } else {
+                this.state.heatActive = false;
+                this.state.coolActive = false;
+                promise = this.setMode('NEUTRAL');
+            }
         }
 
         return promise.then(function () {
@@ -468,11 +483,78 @@ function Thermostat() {
             promise = q();
         } else {
 
-            this.lcd.cursor(1, 0);
-            this.lcd.print(this.state.temperature.toFixed(1) + " C");
+            if (!this.state.openWindow) {
+                this.lcd.cursor(1, 0);
+                this.lcd.print(this.state.temperature.toFixed(1) + " C");
 
-            this.lcd.cursor(1, 16);
-            this.lcd.print(this.state.setpoint.toFixed(1));
+                this.lcd.cursor(1, 16);
+                this.lcd.print(this.state.setpoint.toFixed(1));
+            }
+
+            deferred.resolve();
+            promise = deferred.promise;
+        }
+
+        return promise;
+    };
+
+    /**
+     *
+     */
+    Thermostat.prototype.windowOpen = function () {
+        //this.logDebug('Setting display.', this.state.temperature, this.state.setpoint);
+        var promise;
+        var deferred = q.defer();
+
+        if (this.isSimulated()) {
+            promise = q();
+        } else {
+
+            this.state.openWindow = true;
+
+            this.lcd.clear();
+
+            this.lcd.cursor(0, 0);
+            this.lcd.print("OPEN WINDOW");
+            this.lcd.cursor(0, 16);
+            this.lcd.print("DETE");
+            this.lcd.cursor(2, 0);
+            this.lcd.print("CTED");
+            this.lcd.cursor(3, 0);
+            this.lcd.print("");
+
+            deferred.resolve();
+            promise = deferred.promise;
+        }
+
+        return promise;
+    };
+
+    /**
+     *
+     */
+    Thermostat.prototype.windowClosed = function () {
+        //this.logDebug('Setting display.', this.state.temperature, this.state.setpoint);
+        var promise;
+        var deferred = q.defer();
+
+        if (this.isSimulated()) {
+            promise = q();
+        } else {
+
+            this.state.openWindow = false;
+
+            //LCD Reset
+            this.lcd.clear();
+
+            this.lcd.cursor(0, 0);
+            this.lcd.print("Temperature: ");
+            this.lcd.cursor(0, 16);
+            this.lcd.print("Setp");
+            this.lcd.cursor(2, 0);
+            this.lcd.print("oint: ");
+            this.lcd.cursor(3, 0);
+            this.lcd.print(" C");
 
             deferred.resolve();
             promise = deferred.promise;

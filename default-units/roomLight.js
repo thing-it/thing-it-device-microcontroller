@@ -180,7 +180,7 @@ function RoomLight() {
         var promise;
         var deferred = q.defer();
 
-        this.logDebug("setState ", targetstate);
+        this.logDebug("SetState: ", targetstate);
 
         if (this.isSimulated()) {
             this.state = targetstate;
@@ -211,13 +211,9 @@ function RoomLight() {
             console.log(this.state);
             this.publishStateChange();
 
-
             deferred.resolve();
-
             promise = deferred.promise;
-
             return promise;
-
 
         }
     };

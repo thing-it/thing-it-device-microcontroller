@@ -1,4 +1,4 @@
-<ti-dimmer state="component._state"
-           change="panel.callActorService(component, 'setState', component._state)"></ti-dimmer>
-
-
+<ti-light state="component._state"
+          change="panel.callActorService(component, 'setState', component._state)"
+          toggle="panel.callActorService(component, 'toggleLight', $event)"
+          options="{lightState: true, dimmer: true, scene: false, fieldMappings: {dimmerLevel: 'brightness' }}"></ti-light>

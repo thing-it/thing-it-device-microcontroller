@@ -101,9 +101,9 @@ function Motion() {
                 this.tickUpdateInterval = setInterval(function () {
                     udateTicksOverTime(this.lastTicks, this.configuration.tickCountTime, function (newTickArrayLength) {
                         this.state.ticksPerMinute = parseFloat(newTickArrayLength.toFixed(2));
-                        if (this.state.ticksPerMinute === 0) {
-                            this.state.ticksPerMinute += 0.01;
-                        }
+                        // if (this.state.ticksPerMinute === 0) {
+                        //     this.state.ticksPerMinute += 0.01;
+                        // }
                         this.publishStateChange();
                         this.logDebug("New Tick Value: " + this.state.ticksPerMinute + " p.M. within a average over " + this.configuration.tickCountTime + " Minutes");
                     }.bind(this));

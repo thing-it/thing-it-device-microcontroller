@@ -10,13 +10,13 @@ This allows you to
 * control the Microcontroller configuration over the Internet,
 * define complex services, event processing, storyboards and Jobs combining the Microcontroller and its connected Devices, Actors and Sensors with other Devices, Sensors and Actors. 
 
-by means of [thing-it-node](https://github.com/marcgille/thing-it-node) and [thing-it.com](http://www.thing-it.com).
+by means of [thing-it-node](https://github.com/thing-it/thing-it-node) and [thing-it.com](http://www.thing-it.com).
 
 ## Installation
 
 After you have 
 
-* [set up](https://github.com/marcgille/thing-it-node/wiki/General-Installation) your [thing-it] Node Box and 
+* [set up](https://github.com/thing-it/thing-it-node/wiki/General-Installation) your [thing-it] Node Box and
 * configured or copied a [thing-it] Mesh with a TI SensorTag, 
 
 connect your microcontroller to your [thing-it] Node Box via a USB cable.

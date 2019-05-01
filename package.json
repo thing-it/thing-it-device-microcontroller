@@ -22,10 +22,10 @@
     "lodash": "^3.10.1",
     "q": "^1.4.1",
     "serialport": "^4.0.7",
-    "node-pixel": "^0.9.3",
     "moment": "^2.20.1"
   },
   "devDependencies": {
+    "node-pixel": "^0.9.3",
     "thing-it-test": "0.0.13"
   }
 }

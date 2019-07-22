@@ -114,6 +114,12 @@ function Led() {
     Led.prototype.start = function () {
         var deferred = q.defer();
 
+        this.operationalState = {
+            status: 'PENDING',
+            message: 'Waiting for initialization...'
+        };
+        this.publishOperationalStateChange();
+
         this.state = {
             light: "off",
             brightness : 0
@@ -132,8 +138,22 @@ function Led() {
                 this.setState(this.state);
                 this.logDebug("LED initialized.");
 
+                this.operationalState = {
+                    status: 'OK',
+                    message: 'LED successfully initialized'
+                }
+                this.publishOperationalStateChange();
+
                 deferred.resolve();
             } catch (error) {
+                this.operationalState = {
+                    status: 'ERROR',
+                    message: "Cannot initialize " +
+                    this.device.id + "/" + this.id +
+                    ":" + error
+                }
+                this.publishOperationalStateChange();  
+                
                 this.device.node
                     .publishMessage("Cannot initialize " +
                         this.device.id + "/" + this.id +
@@ -142,6 +162,12 @@ function Led() {
                 deferred.reject(error);
             }
         } else {
+            this.operationalState = {
+                status: 'OK',
+                message: 'LED successfully initialized'
+            }
+            this.publishOperationalStateChange();
+
             deferred.resolve();
         }
 

@@ -94,6 +94,12 @@ function Pixel() {
     Pixel.prototype.start = function () {
         var deferred = q.defer();
 
+        this.operationalState = {
+            status: 'PENDING',
+            message: 'Waiting for initialization...'
+        };
+        this.publishOperationalStateChange();
+
         this.state = {
             light: "off"
         };
@@ -121,6 +127,13 @@ function Pixel() {
                     console.log("Pixel controller ready");
                     this.off();
 
+
+                this.operationalState = {
+                    status: 'OK',
+                    message: 'Pixel successfully initialized'
+                }
+                this.publishOperationalStateChange();
+
                     deferred.resolve();
                 }.bind(this));
 
@@ -128,6 +141,14 @@ function Pixel() {
 
 
             } catch (error) {
+                this.operationalState = {
+                    status: 'ERROR',
+                    message: "Cannot initialize " +
+                    this.device.id + "/" + this.id +
+                    ":" + error
+                }
+                this.publishOperationalStateChange();   
+                
                 this.device.node
                     .publishMessage("Cannot initialize " +
                         this.device.id + "/" + this.id +
@@ -136,6 +157,12 @@ function Pixel() {
                 deferred.reject(error);
             }
         } else {
+            this.operationalState = {
+                status: 'OK',
+                message: 'Pixel successfully initialized'
+            }
+            this.publishOperationalStateChange();
+
             deferred.resolve();
         }
 

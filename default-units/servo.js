@@ -93,6 +93,12 @@ function Servo() {
     Servo.prototype.start = function () {
         var deferred = q.defer();
 
+        this.operationalState = {
+            status: 'PENDING',
+            message: 'Waiting for initialization...'
+        };
+        this.publishOperationalStateChange();
+
         this.state = {
             position: this.configuration.startAt
         };
@@ -109,12 +115,30 @@ function Servo() {
                         self.configuration.maximum],
                     startAt: self.configuration.startAt
                 });
+
+                this.operationalState = {
+                    status: 'OK',
+                    message: 'Servo successfully initialized'
+                }
+                this.publishOperationalStateChange();                
             } catch (error) {
                 console.error("Cannot initialize Servo: " + error);
+
+                this.operationalState = {
+                    status: 'ERROR',
+                    message: "Cannot initialize Servo: " + error
+                }
+                this.publishOperationalStateChange(); 
 
                 deferred.reject("Cannot initialize real Servo: "
                     + error);
             }
+        } else {
+            this.operationalState = {
+                status: 'OK',
+                message: 'Servo successfully initialized'
+            }
+            this.publishOperationalStateChange();
         }
 
 

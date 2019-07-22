@@ -150,6 +150,12 @@ function Lcd() {
     Lcd.prototype.start = function () {
         var deferred = q.defer();
 
+        this.operationalState = {
+            status: 'PENDING',
+            message: 'Waiting for initialization...'
+        };
+        this.publishOperationalStateChange();
+
         if (!this.configuration.rows) {
             this.configuration.rows = 2;
         }
@@ -190,9 +196,21 @@ function Lcd() {
                     // dots: this.configuration.matrix
                     // backlit : self.configuration.backlit
                 });
+                this.operationalState = {
+                    status: 'OK',
+                    message: 'LCD Display successfully initialized'
+                }
+                this.publishOperationalStateChange();
 
                 deferred.resolve();
             } catch (error) {
+                this.operationalState = {
+                    status: 'ERROR',
+                    message: "Cannot initialize real LCD: "
+                    + error
+                }
+                this.publishOperationalStateChange();   
+                
                 console.error("Cannot initialize real LCD: "
                     + error);
 
@@ -200,6 +218,12 @@ function Lcd() {
             }
         }
         else {
+            this.operationalState = {
+                status: 'OK',
+                message: 'LCD Display successfully initialized'
+            }
+            this.publishOperationalStateChange();
+
             deferred.resolve();
         }
 

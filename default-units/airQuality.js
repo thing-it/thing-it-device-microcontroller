@@ -51,6 +51,12 @@ function AirQuality() {
      */
     AirQuality.prototype.start = function () {
 
+        this.operationalState = {
+            status: 'PENDING',
+            message: 'Waiting for initialization...'
+        };
+        this.publishOperationalStateChange();
+
         this.logLevel = 'debug';
 
         try {
@@ -204,15 +210,35 @@ function AirQuality() {
 
                     console.log("hier auch");
 
-
-                } catch (x) {
+                    this.operationalState = {
+                        status: 'OK',
+                        message: 'Air Quality successfully initialized'
+                    }
+                    this.publishOperationalStateChange();
+                } catch (x) {                    
+                    this.operationalState = {
+                        status: 'ERROR',
+                        message: 'Air Quality initialization error'
+                    }
+                    this.publishOperationalStateChange();  
 
                     console.log(x);
                 }
-
-
+            } else {
+                this.operationalState = {
+                    status: 'OK',
+                    message: 'Air Quality successfully initialized'
+                }
+                this.publishOperationalStateChange();
             }
         } catch (x) {
+            this.operationalState = {
+                status: 'ERROR',
+                message: "Cannot initialize " + this.device.id + "/"
+                + this.id + ":" + x
+            }
+            this.publishOperationalStateChange();              
+
             this.publishMessage("Cannot initialize " + this.device.id + "/"
                 + this.id + ":" + x);
         }

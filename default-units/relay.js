@@ -62,6 +62,12 @@ function Relay() {
     Relay.prototype.start = function () {
         var deferred = q.defer();
 
+        this.operationalState = {
+            status: 'PENDING',
+            message: 'Waiting for initialization...'
+        };
+        this.publishOperationalStateChange();
+
         this.state = {
             gate: false
         };
@@ -73,8 +79,22 @@ function Relay() {
                 this.relay = new five.Relay(this.configuration.pin,
                     this.configuration.type);
 
+                this.operationalState = {
+                    status: 'OK',
+                     message: 'Relay successfully initialized'
+                }
+                this.publishOperationalStateChange();
+
                 deferred.resolve();
             } catch (error) {
+                this.operationalState = {
+                    status: 'ERROR',
+                    message: "Cannot initialize " +
+                    this.device.id + "/" + this.id +
+                    ":" + error
+                }
+                this.publishOperationalStateChange(); 
+                
                 this.device.node
                     .publishMessage("Cannot initialize "
                         + this.device.id + "/" + this.id
@@ -84,6 +104,12 @@ function Relay() {
             }
         }
         else {
+            this.operationalState = {
+                status: 'OK',
+                 message: 'Relay successfully initialized'
+            }
+            this.publishOperationalStateChange();
+
             deferred.resolve();
         }
 

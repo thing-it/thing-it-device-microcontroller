@@ -56,6 +56,12 @@ function Encoder() {
      */
     Encoder.prototype.start = function () {
 
+        this.operationalState = {
+            status: 'PENDING',
+            message: 'Waiting for initialization...'
+        };
+        this.publishOperationalStateChange();
+
         var deferred = q.defer();
 
 
@@ -149,9 +155,22 @@ function Encoder() {
                     waveform = '';
                 }
 
+                this.operationalState = {
+                    status: 'OK',
+                    message: 'Rotary Encoder successfully initialized'
+                }
+                this.publishOperationalStateChange();
+
                 deferred.resolve();
 
             } catch (error) {
+                this.operationalState = {
+                    status: 'ERROR',
+                    message: "Cannot initialize " + this.device.id + "/"
+                    + this.id + ":" + x
+                }
+                this.publishOperationalStateChange();  
+
                 this.device.node
                     .publishMessage("Cannot initialize " +
                         this.device.id + "/" + this.id +
@@ -161,6 +180,12 @@ function Encoder() {
             }
         }
         else {
+            this.operationalState = {
+                status: 'OK',
+                message: 'Rotary Encoder successfully initialized'
+            }
+            this.publishOperationalStateChange();
+
             deferred.resolve();
         }
 

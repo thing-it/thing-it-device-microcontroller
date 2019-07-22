@@ -54,6 +54,12 @@ function Switch() {
 
         var deferred = q.defer();
 
+        this.operationalState = {
+            status: 'PENDING',
+            message: 'Waiting for initialization...'
+        };
+        this.publishOperationalStateChange();
+
         this.state = {};
 
         if (!this.isSimulated()) {
@@ -66,7 +72,22 @@ function Switch() {
                     type: this.type
                 });
 
+                this.operationalState = {
+                    status: 'OK',
+                    message: 'Switch successfully initialized'
+                }
+                this.publishOperationalStateChange();
+                
+                deferred.resolve();
             } catch (error) {
+                this.operationalState = {
+                    status: 'ERROR',
+                    message: "Cannot initialize " +
+                    this.device.id + "/" + this.id +
+                    ":" + error
+                }
+                this.publishOperationalStateChange();   
+                
                 this.device.node
                     .publishMessage("Cannot initialize " +
                         this.device.id + "/" + this.id +
@@ -75,6 +96,12 @@ function Switch() {
                 deferred.reject(error);
             }
         } else {
+            this.operationalState = {
+                status: 'OK',
+                message: 'Switch successfully initialized'
+            }
+            this.publishOperationalStateChange();
+
             deferred.resolve();
         }
 

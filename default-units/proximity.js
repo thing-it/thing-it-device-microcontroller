@@ -121,6 +121,12 @@ function Proximity() {
     Proximity.prototype.start = function () {
         var deferred = q.defer();
 
+        this.operationalState = {
+            status: 'PENDING',
+            message: 'Waiting for initialization...'
+        };
+        this.publishOperationalStateChange();
+
         this.logLevel = 'debug';
 
         //this.state.distanceCM = 0;
@@ -149,10 +155,24 @@ function Proximity() {
                 this.state.tresholdTime = this.configuration.tresholdTime;
                 this.state.tolerance = this.configuration.tolerance;
 
+                this.operationalState = {
+                    status: 'OK',
+                    message: 'Proximity successfully initialized'
+                }
+                this.publishOperationalStateChange();
+
                 deferred.resolve();
 
             } catch (error) {
                 console.log("initialize Error of proximity");
+
+                this.operationalState = {
+                    status: 'ERROR',
+                    message: "Cannot initialize " +
+                    this.device.id + "/" + this.id +
+                    ":" + error
+                }
+                this.publishOperationalStateChange();
 
                 this.device.node
                     .publishMessage("Cannot initialize "
@@ -211,9 +231,14 @@ function Proximity() {
                 console.log("Proximity change cm: ", this.cm);
 
             });
-
-
+            
         } else {
+            this.operationalState = {
+                status: 'OK',
+                message: 'Proximity successfully initialized'
+            }
+            this.publishOperationalStateChange();
+
             deferred.resolve();
         }
 

@@ -64,6 +64,12 @@ function Jalousie() {
     Jalousie.prototype.start = function () {
         var deferred = q.defer();
 
+        this.operationalState = {
+            status: 'PENDING',
+            message: 'Waiting for initialization...'
+        };
+        this.publishOperationalStateChange();
+
         this.state = {
             position: 100,
             rotation: 90
@@ -97,11 +103,22 @@ function Jalousie() {
 
                 }.bind(this));
 
+                this.operationalState = {
+                    status: 'OK',
+                    message: 'Jalousie Control successfully initialized'
+                }
+                this.publishOperationalStateChange();
 
                 deferred.resolve();
-
-
             } catch (error) {
+                this.operationalState = {
+                    status: 'ERROR',
+                    message: "Cannot initialize " +
+                    this.device.id + "/" + this.id +
+                    ":" + error
+                }
+                this.publishOperationalStateChange();  
+
                 this.device.node
                     .publishMessage("Cannot initialize " +
                         this.device.id + "/" + this.id +
@@ -110,6 +127,12 @@ function Jalousie() {
                 deferred.reject(error);
             }
         } else {
+            this.operationalState = {
+                status: 'OK',
+                message: 'Jalousie Control successfully initialized'
+            }
+            this.publishOperationalStateChange();
+
             deferred.resolve();
         }
 

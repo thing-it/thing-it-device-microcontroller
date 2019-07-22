@@ -123,9 +123,21 @@ function Microcontroller() {
     Microcontroller.prototype.start = function () {
         var deferred = q.defer();
 
+        this.operationalState = {
+            status: 'PENDING',
+            message: 'Waiting for initialization...'
+        };
+        this.publishOperationalStateChange();
+
         this.logLevel = 'debug';
 
         if (this.isSimulated()) {
+            this.operationalState = {
+                status: 'OK',
+                message: 'GPIO Microcontroller successfully initialized'
+            }
+            this.publishOperationalStateChange();
+
             deferred.resolve();
         } else {
             var five = require("johnny-five");
@@ -225,7 +237,21 @@ function Microcontroller() {
 
             cleanUp()
                 .then(bindBoard)
-                .then(addListener);
+                .then(addListener)
+                .then(() => {
+                    this.operationalState = {
+                        status: 'OK',
+                        message: 'GPIO Microcontroller successfully initialized'
+                    }
+                    this.publishOperationalStateChange();
+                })
+                .catch(() => {
+                    this.operationalState = {
+                        status: 'ERROR',
+                        message: 'GPIO Microcontroller initialization error'
+                    }
+                    this.publishOperationalStateChange();                    
+                });
 
         }
         return deferred.promise;

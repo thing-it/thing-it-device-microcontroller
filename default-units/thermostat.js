@@ -97,6 +97,12 @@ function Thermostat() {
      *
      */
     Thermostat.prototype.start = function () {
+        this.operationalState = {
+            status: 'PENDING',
+            message: 'Waiting for initialization...'
+        };
+        this.publishOperationalStateChange();
+
         var tempRangeMidpoint = (this.configuration.minimumSetpoint + this.configuration.maximumSetpoint) / 2;
 
         this.state = {
@@ -114,6 +120,12 @@ function Thermostat() {
             this.simulationInterval = setInterval(function () {
                 this.update()
             }.bind(this), 10000);
+
+            this.operationalState = {
+                status: 'OK',
+                message: 'Thermostat successfully initialized'
+            }
+            this.publishOperationalStateChange();
         } else {
             this.logDebug("Starting in non-simulated mode");
 
@@ -199,6 +211,11 @@ function Thermostat() {
                 self.state.liveTemperature = this.thermometer.celsius;
             });
 
+            this.operationalState = {
+                status: 'OK',
+                message: 'Thermostat successfully initialized'
+            }
+            this.publishOperationalStateChange();
         }
 
         this.productionInterval = setInterval(function () {

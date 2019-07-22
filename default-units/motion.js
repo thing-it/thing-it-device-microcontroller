@@ -78,6 +78,12 @@ function Motion() {
     Motion.prototype.start = function () {
         this.logLevel = 'debug';
 
+        this.operationalState = {
+            status: 'PENDING',
+            message: 'Waiting for initialization...'
+        };
+        this.publishOperationalStateChange();
+
         try {
             if (!this.isSimulated()) {
 
@@ -204,8 +210,21 @@ function Motion() {
 
 
             }
-        } catch
-            (x) {
+
+            this.operationalState = {
+                status: 'OK',
+                message: 'Motion successfully initialized'
+            }
+            this.publishOperationalStateChange();
+        } catch (x) {
+            this.operationalState = {
+                status: 'ERROR',
+                message: "Cannot initialize " +
+                this.device.id + "/" + this.id +
+                ":" + error
+            }
+            this.publishOperationalStateChange(); 
+            
             this.publishMessage("Cannot initialize " + this.device.id + "/"
                 + this.id + ":" + x);
         }

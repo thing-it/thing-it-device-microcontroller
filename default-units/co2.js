@@ -50,6 +50,12 @@ function Co2() {
      *
      */
     Co2.prototype.start = function () {
+        this.operationalState = {
+            status: 'PENDING',
+            message: 'Waiting for initialization...'
+        };
+        this.publishOperationalStateChange();
+
         try {
             if (!this.isSimulated()) {
                 var five = require("johnny-five");
@@ -87,10 +93,27 @@ function Co2() {
 
                 });
 
-
+                this.operationalState = {
+                    status: 'OK',
+                    message: 'Co2 sensor successfully initialized'
+                }
+                this.publishOperationalStateChange();
+            } else {
+                this.operationalState = {
+                    status: 'OK',
+                    message: 'Co2 sensor successfully initialized'
+                }
+                this.publishOperationalStateChange();
             }
 
         } catch (x) {
+            this.operationalState = {
+                status: 'ERROR',
+                message: "Cannot initialize " + this.device.id + "/"
+                + this.id + ":" + x
+            }
+            this.publishOperationalStateChange();  
+            
             this.publishMessage("Cannot initialize " + this.device.id + "/"
                 + this.id + ":" + x);
         }

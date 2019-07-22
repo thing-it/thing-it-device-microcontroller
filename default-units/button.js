@@ -71,6 +71,11 @@ function Button() {
      *
      */
     Button.prototype.start = function () {
+        this.operationalState = {
+            status: 'PENDING',
+            message: 'Waiting for initialization...'
+        };
+        this.publishOperationalStateChange();
 
         var deferred = q.defer();
 
@@ -89,7 +94,20 @@ function Button() {
                     holdtime: this.configuration.holdtime
                 });
 
+                this.operationalState = {
+                    status: 'OK',
+                    message: 'Button successfully initialized'
+                }
+                this.publishOperationalStateChange();
             } catch (error) {
+                this.operationalState = {
+                    status: 'ERROR',
+                    message: "Cannot initialize " +
+                    this.device.id + "/" + this.id +
+                    ":" + error
+                }
+                this.publishOperationalStateChange();   
+
                 this.device.node
                     .publishMessage("Cannot initialize " +
                         this.device.id + "/" + this.id +
@@ -98,6 +116,12 @@ function Button() {
                 deferred.reject(error);
             }
         } else {
+            this.operationalState = {
+                status: 'OK',
+                message: 'Button successfully initialized'
+            }
+            this.publishOperationalStateChange();
+
             deferred.resolve();
         }
 

@@ -7,7 +7,19 @@ module.exports = {
         deviceTypes: ["microcontroller/microcontroller"],
         services: [
             {id: "toggleLight", label: "Toggle Light"},
-            {id: "setState", label: "Set State"},
+            {
+                id: "dimmerChange",
+                label: "Dimmer Change",
+                parameters: [
+                    {
+                        label: 'Dimmer Level',
+                        id: 'dimmerLevel',
+                        type: {
+                            id: 'decimal'
+                        }
+                    }
+                ]
+            },
         ],
         state: [
             {
@@ -271,4 +283,49 @@ function RoomLight() {
         }
     };
 
+        /**
+     * Brightness update service
+     * @input {{dimmerLevel:number}} param - dimmer level
+     */
+    RoomLight.prototype.dimmerChange = function (param) {
+        let promise;
+        let deferred = q.defer();
+
+        let paramDimmerLevel = param.hasOwnProperty('dimmerLevel') ? param.dimmerLevel : null        
+
+
+        if (paramDimmerLevel !== null && this.state.brightness !== paramDimmerLevel) {
+      
+            if (this.isSimulated()) {
+                this.state.brightness = paramDimmerLevel;
+                this.publishStateChange();    
+            } else {
+                this.state.brightness = paramDimmerLevel;
+                let byteBrightness = (paramDimmerLevel * 2.55).toFixed();
+    
+                if (byteBrightness > 255) {
+                    byteBrightness = 255;
+                }
+    
+                if (this.state.switch) {
+                    this.light1.brightness(byteBrightness);
+                    this.light2.brightness(byteBrightness);
+                    this.light3.brightness(byteBrightness);
+                } else {
+                    //this.light1.brightness(byteBrightness);
+                    this.light1.stop().off();
+                    //this.light2.brightness(byteBrightness);
+                    this.light2.stop().off();
+                    //this.light3.brightness(byteBrightness);
+                    this.light3.stop().off();
+                }
+    
+                console.log(this.state);
+                this.publishStateChange();
+            }
+        }
+        deferred.resolve();
+        promise = deferred.promise;
+        return promise;
+    }
 };

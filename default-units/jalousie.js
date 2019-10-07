@@ -22,7 +22,14 @@ module.exports = {
                 type: {
                     id: "decimal"
                 }
-            }],
+            },{
+                id: "isMoving",
+                label: "Is Moving",
+                type: {
+                    id: "boolean"
+                }
+            }
+        ],
         configuration: [
             {
                 label: "LED intensitiy",
@@ -72,7 +79,8 @@ function Jalousie() {
 
         this.state = {
             position: 100,
-            rotation: 90
+            rotation: 90,
+            isMoving: fasle
         };
 
         this.logLevel = 'debug';
@@ -150,6 +158,11 @@ function Jalousie() {
      *
      */
     Jalousie.prototype.setState = function (state) {
+
+        if (!_this.state.isMoving) {
+            _this.isMoving = true;
+        } 
+
         if (this.state.position < state.position) {
             this.down(state);
         }
@@ -190,6 +203,12 @@ function Jalousie() {
         this.stopMotion();
 
         this.logDebug("Jalousie Moving up");
+
+        if (!_this.state.isMoving) {
+            _this.state.isMoving = true;
+            _this.publishStateChange({ isMoving: _this.state.isMoving });
+        } 
+
         var target = {};
         if (typeof pretarget === "undefined") {
             target.position = 0;
@@ -204,6 +223,10 @@ function Jalousie() {
 
             if (this.state.position <= 0) {
                 clearInterval(this.upInterval);
+                if (_this.state.isMoving) {
+                    _this.state.isMoving = false;
+                    _this.publishStateChange({ isMoving: _this.state.isMoving });
+                } 
             }
 
         }.bind(this), this.configuration.speed);
@@ -217,6 +240,11 @@ function Jalousie() {
 
         this.logDebug("Jalousie Moving down");
 
+        if (!_this.state.isMoving) {
+            _this.state.isMoving = true;
+            _this.publishStateChange({ isMoving: _this.state.isMoving });
+        } 
+        
         var target = {};
         if (typeof pretarget === "undefined") {
             target.position = 100;
@@ -234,6 +262,10 @@ function Jalousie() {
 
             if (this.state.position >= 100) {
                 clearInterval(this.downInterval);
+                if (_this.state.isMoving) {
+                    _this.state.isMoving = false;
+                    _this.publishStateChange({ isMoving: _this.state.isMoving });
+                } 
             }
 
         }.bind(this), this.configuration.speed);
@@ -243,6 +275,12 @@ function Jalousie() {
      *
      */
     Jalousie.prototype.stopMotion = function () {
+        
+        if (_this.state.isMoving) {
+            _this.state.isMoving = false;
+            _this.publishStateChange({ isMoving: _this.state.isMoving });
+        }           
+
         if (this.upInterval) {
             clearInterval(this.upInterval);
         }

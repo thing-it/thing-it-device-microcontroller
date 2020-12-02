@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "johnny-five": "^2.0.0",
-    "lodash": "^3.10.1",
+    "lodash": "^4.17.19",
     "moment": "^2.20.1",
     "node-pixel": "^0.11.0",
     "q": "^1.4.1",
